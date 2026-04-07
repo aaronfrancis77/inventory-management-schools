@@ -1,0 +1,6 @@
+@DaymapInventory_HostAddress = http://localhost:5146
+
+GET {{DaymapInventory_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
