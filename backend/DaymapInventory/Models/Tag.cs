@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace DaymapInventory.Models
 {
@@ -15,8 +16,8 @@ namespace DaymapInventory.Models
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-        // Navigation properties
-        public ICollection<ItemTag> ItemTags { get; set; } = new List<ItemTag>();
-        public ICollection<CategoryTag> CategoryTags { get; set; } = new List<CategoryTag>();
+        // Navigation properties — ignored in JSON to prevent circular references
+        [JsonIgnore] public ICollection<ItemTag> ItemTags { get; set; } = new List<ItemTag>();
+        [JsonIgnore] public ICollection<CategoryTag> CategoryTags { get; set; } = new List<CategoryTag>();
     }
 }

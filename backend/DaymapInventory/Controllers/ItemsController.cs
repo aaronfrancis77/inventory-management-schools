@@ -17,44 +17,44 @@ namespace DaymapInventory.Controllers
 
         // GET: api/items
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public IActionResult GetAll()
         {
-            var items = await _repository.GetAllAsync();
-            return Ok(items);
+            return Ok(_repository.GetAll());
         }
 
         // GET: api/items/5
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(int id)
+        public IActionResult GetById(int id)
         {
-            var item = await _repository.GetByIdAsync(id);
+            var item = _repository.GetById(id);
             if (item == null) return NotFound();
             return Ok(item);
         }
 
         // POST: api/items
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] Item item)
+        public IActionResult Create([FromBody] Item item)
         {
-            var created = await _repository.CreateAsync(item);
-            return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
+            _repository.Add(item);
+            return CreatedAtAction(nameof(GetById), new { id = item.Id }, item);
         }
 
         // PUT: api/items/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] Item item)
+        public IActionResult Update(int id, [FromBody] Item item)
         {
-            var updated = await _repository.UpdateAsync(id, item);
-            if (updated == null) return NotFound();
-            return Ok(updated);
+            if (_repository.GetById(id) == null) return NotFound();
+            item.Id = id;
+            _repository.Update(item);
+            return Ok(_repository.GetById(id));
         }
 
         // DELETE: api/items/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
+        public IActionResult Delete(int id)
         {
-            var success = await _repository.DeleteAsync(id);
-            if (!success) return NotFound();
+            if (_repository.GetById(id) == null) return NotFound();
+            _repository.Delete(id);
             return NoContent();
         }
     }

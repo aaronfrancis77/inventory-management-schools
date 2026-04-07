@@ -3,54 +3,55 @@ using DaymapInventory.Models;
 
 namespace DaymapInventory.Repositories
 {
-    // Used for testing - no database required
     public class InMemoryItemRepository : IItemRepository
     {
         private readonly List<Item> _items = new();
         private int _nextId = 1;
 
-        public Task<IEnumerable<Item>> GetAllAsync()
+        public Item? GetById(int id)
         {
-            return Task.FromResult<IEnumerable<Item>>(_items);
+            return _items.FirstOrDefault(i => i.Id == id);
         }
 
-        public Task<Item?> GetByIdAsync(int id)
+        public IEnumerable<Item> GetAll()
         {
-            var item = _items.FirstOrDefault(i => i.Id == id);
-            return Task.FromResult(item);
+            return _items;
         }
 
-        public Task<Item> CreateAsync(Item item)
+        public void Add(Item item)
         {
             item.Id = _nextId++;
             item.CreatedAt = DateTime.UtcNow;
             item.UpdatedAt = DateTime.UtcNow;
             _items.Add(item);
-            return Task.FromResult(item);
         }
 
-        public Task<Item?> UpdateAsync(int id, Item updated)
+        public void Update(Item item)
         {
-            var existing = _items.FirstOrDefault(i => i.Id == id);
-            if (existing == null) return Task.FromResult<Item?>(null);
+            var existing = GetById(item.Id);
+            if (existing == null) return;
 
-            existing.Name = updated.Name;
-            existing.Description = updated.Description;
-            existing.StockCount = updated.StockCount;
-            existing.LowStockThreshold = updated.LowStockThreshold;
-            existing.Status = updated.Status;
+            existing.Name = item.Name;
+            existing.Description = item.Description;
+            existing.StockCount = item.StockCount;
+            existing.Status = item.Status;
+            existing.LowStockThreshold = item.LowStockThreshold;
             existing.UpdatedAt = DateTime.UtcNow;
-
-            return Task.FromResult<Item?>(existing);
         }
 
-        public Task<bool> DeleteAsync(int id)
+        public void Delete(int id)
         {
-            var item = _items.FirstOrDefault(i => i.Id == id);
-            if (item == null) return Task.FromResult(false);
+            _items.RemoveAll(i => i.Id == id);
+        }
 
-            _items.Remove(item);
-            return Task.FromResult(true);
+        public IEnumerable<Item> GetByStatus(string status)
+        {
+            return _items.Where(i => i.Status == status);
+        }
+
+        public IEnumerable<Item> GetLowStock()
+        {
+            return _items.Where(i => i.StockCount <= i.LowStockThreshold);
         }
     }
 }

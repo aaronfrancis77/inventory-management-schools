@@ -8,8 +8,12 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Dependency Injection - swap InMemoryItemRepository for SqlItemRepository when DB is ready
+// Dependency Injection - swap any In-Memory repo for a Sql implementation when the DB is ready
 builder.Services.AddSingleton<IItemRepository, InMemoryItemRepository>();
+builder.Services.AddSingleton<IItemInstanceRepository, InMemoryItemInstanceRepository>();
+builder.Services.AddSingleton<ICategoryRepository, InMemoryCategoryRepository>();
+builder.Services.AddSingleton<ITagRepository, InMemoryTagRepository>();
+builder.Services.AddSingleton<ITransactionRepository, InMemoryTransactionRepository>();
 
 var app = builder.Build();
 

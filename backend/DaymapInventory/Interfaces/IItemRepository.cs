@@ -2,12 +2,9 @@ using DaymapInventory.Models;
 
 namespace DaymapInventory.Interfaces
 {
-    public interface IItemRepository
+    public interface IItemRepository : IRepository<Item>
     {
-        Task<IEnumerable<Item>> GetAllAsync();
-        Task<Item?> GetByIdAsync(int id);
-        Task<Item> CreateAsync(Item item);
-        Task<Item?> UpdateAsync(int id, Item item);
-        Task<bool> DeleteAsync(int id);
+        IEnumerable<Item> GetByStatus(string status);
+        IEnumerable<Item> GetLowStock();
     }
 }

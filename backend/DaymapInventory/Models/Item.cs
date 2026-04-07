@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace DaymapInventory.Models
 {
@@ -26,11 +27,11 @@ namespace DaymapInventory.Models
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
-        // Navigation properties
-        public ICollection<ItemInstance> Instances { get; set; } = new List<ItemInstance>();
-        public ICollection<ItemCategory> ItemCategories { get; set; } = new List<ItemCategory>();
-        public ICollection<ItemTag> ItemTags { get; set; } = new List<ItemTag>();
-        public ICollection<Transaction> Transactions { get; set; } = new List<Transaction>();
+        // Navigation properties — ignored in JSON to prevent circular references and bloated API payloads
+        [JsonIgnore] public ICollection<ItemInstance> Instances { get; set; } = new List<ItemInstance>();
+        [JsonIgnore] public ICollection<ItemCategory> ItemCategories { get; set; } = new List<ItemCategory>();
+        [JsonIgnore] public ICollection<ItemTag> ItemTags { get; set; } = new List<ItemTag>();
+        [JsonIgnore] public ICollection<Transaction> Transactions { get; set; } = new List<Transaction>();
     }
 
     public enum ItemStatus
