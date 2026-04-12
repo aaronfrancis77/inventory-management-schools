@@ -14,7 +14,7 @@ builder.Services.AddSingleton<IItemInstanceRepository, InMemoryItemInstanceRepos
 builder.Services.AddSingleton<ICategoryRepository, InMemoryCategoryRepository>();
 builder.Services.AddSingleton<ITagRepository, InMemoryTagRepository>();
 builder.Services.AddSingleton<ITransactionRepository, InMemoryTransactionRepository>();
-// IRequestCookieCollection, 
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline

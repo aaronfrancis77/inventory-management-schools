@@ -21,7 +21,7 @@ namespace DaymapInventory.Tests
         [TestMethod]
         public void Add_ShouldAssignIdAndStore()
         {
-            var item = new Item { Name = "Textbook", Description = "Year 10 Maths" };
+            var item = new Item { Name = "Textbook", Description = "Year 12 Maths" };
 
             _repository.Add(item);
 
