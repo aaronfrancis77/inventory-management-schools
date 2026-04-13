@@ -26,8 +26,10 @@ namespace DaymapInventory.Models
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
-
-        // Navigation properties — ignored in JSON to prevent circular references and bloated API payloads
+        
+        
+        
+    
         [JsonIgnore] public ICollection<ItemInstance> Instances { get; set; } = new List<ItemInstance>();
         [JsonIgnore] public ICollection<ItemCategory> ItemCategories { get; set; } = new List<ItemCategory>();
         [JsonIgnore] public ICollection<ItemTag> ItemTags { get; set; } = new List<ItemTag>();

@@ -8,7 +8,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Dependency Injection - swap any In-Memory repo for a Sql implementation when the DB is ready
+// Dependency Injection 
 builder.Services.AddSingleton<IItemRepository, InMemoryItemRepository>();
 builder.Services.AddSingleton<IItemInstanceRepository, InMemoryItemInstanceRepository>();
 builder.Services.AddSingleton<ICategoryRepository, InMemoryCategoryRepository>();
@@ -17,7 +17,6 @@ builder.Services.AddSingleton<ITransactionRepository, InMemoryTransactionReposit
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
