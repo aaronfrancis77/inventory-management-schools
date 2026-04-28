@@ -1,5 +1,7 @@
+using DaymapInventory.Data;
 using DaymapInventory.Interfaces;
 using DaymapInventory.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,12 +10,19 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Dependency Injection 
-builder.Services.AddSingleton<IItemRepository, InMemoryItemRepository>();
-builder.Services.AddSingleton<IItemInstanceRepository, InMemoryItemInstanceRepository>();
-builder.Services.AddSingleton<ICategoryRepository, InMemoryCategoryRepository>();
-builder.Services.AddSingleton<ITagRepository, InMemoryTagRepository>();
-builder.Services.AddSingleton<ITransactionRepository, InMemoryTransactionRepository>();
+// EF Core - MySQL via Pomelo
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseMySql(
+        builder.Configuration.GetConnectionString("DefaultConnection"),
+        ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection"))
+    ));
+
+// Dependency Injection - SQL Repositories
+builder.Services.AddScoped<IItemRepository, SqlItemRepository>();
+builder.Services.AddScoped<IItemInstanceRepository, SqlItemInstanceRepository>();
+builder.Services.AddScoped<ICategoryRepository, SqlCategoryRepository>();
+builder.Services.AddScoped<ITagRepository, SqlTagRepository>();
+builder.Services.AddScoped<ITransactionRepository, SqlTransactionRepository>();
 
 var app = builder.Build();
 
