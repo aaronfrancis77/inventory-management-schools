@@ -17,44 +17,46 @@ namespace DaymapInventory.Controllers
 
         // GET: api/items
         [HttpGet]
-        public IActionResult GetAll()
+        public async Task<IActionResult> GetAll()
         {
-            return Ok(_repository.GetAll());
+            var items = await _repository.GetAll();
+            return Ok(items);
         }
 
         // GET: api/items/5
         [HttpGet("{id}")]
-        public IActionResult GetById(int id)
+        public async Task<IActionResult> GetById(int id)
         {
-            var item = _repository.GetById(id);
+            var item = await _repository.GetById(id);
             if (item == null) return NotFound();
             return Ok(item);
         }
 
         // POST: api/items
         [HttpPost]
-        public IActionResult Create([FromBody] Item item)
+        public async Task<IActionResult> Create([FromBody] Item item)
         {
-            _repository.Add(item);
+            await _repository.Add(item);
             return CreatedAtAction(nameof(GetById), new { id = item.Id }, item);
         }
 
         // PUT: api/items/5
         [HttpPut("{id}")]
-        public IActionResult Update(int id, [FromBody] Item item)
+        public async Task<IActionResult> Update(int id, [FromBody] Item item)
         {
-            if (_repository.GetById(id) == null) return NotFound();
+            if (await _repository.GetById(id) == null) return NotFound();
             item.Id = id;
-            _repository.Update(item);
-            return Ok(_repository.GetById(id));
+            await _repository.Update(item);
+            var updated = await _repository.GetById(id);
+            return Ok(updated);
         }
 
         // DELETE: api/items/5
         [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            if (_repository.GetById(id) == null) return NotFound();
-            _repository.Delete(id);
+            if (await _repository.GetById(id) == null) return NotFound();
+            await _repository.Delete(id);
             return NoContent();
         }
     }
