@@ -59,5 +59,6 @@ namespace DaymapInventory.Controllers
             await _repository.Delete(id);
             return NoContent();
         }
+
     }
 }
