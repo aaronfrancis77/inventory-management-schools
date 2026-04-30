@@ -8,41 +8,44 @@ namespace DaymapInventory.Repositories
         private readonly List<Category> _categories = new();
         private int _nextId = 1;
 
-        public Category? GetById(int id)
+        public Task<Category?> GetById(int id)
         {
-            return _categories.FirstOrDefault(c => c.Id == id);
+            return Task.FromResult(_categories.FirstOrDefault(c => c.Id == id));
         }
 
-        public IEnumerable<Category> GetAll()
+        public Task<IEnumerable<Category>> GetAll()
         {
-            return _categories;
+            return Task.FromResult<IEnumerable<Category>>(_categories);
         }
 
-        public void Add(Category category)
+        public Task Add(Category category)
         {
             category.Id = _nextId++;
             category.CreatedAt = DateTime.UtcNow;
             _categories.Add(category);
+            return Task.CompletedTask;
         }
 
-        public void Update(Category category)
+        public Task Update(Category category)
         {
-            var existing = GetById(category.Id);
-            if (existing == null) return;
+            var existing = _categories.FirstOrDefault(c => c.Id == category.Id);
+            if (existing == null) return Task.CompletedTask;
 
             existing.Name = category.Name;
             existing.Description = category.Description;
+            return Task.CompletedTask;
         }
 
-        public void Delete(int id)
+        public Task Delete(int id)
         {
             _categories.RemoveAll(c => c.Id == id);
+            return Task.CompletedTask;
         }
 
-        public Category? GetByName(string name)
+        public Task<Category?> GetByName(string name)
         {
-            return _categories.FirstOrDefault(c =>
-                c.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+            return Task.FromResult(_categories.FirstOrDefault(c =>
+                c.Name.Equals(name, StringComparison.OrdinalIgnoreCase)));
         }
     }
 }

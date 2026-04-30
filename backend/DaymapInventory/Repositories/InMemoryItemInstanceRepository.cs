@@ -8,56 +8,59 @@ namespace DaymapInventory.Repositories
         private readonly List<ItemInstance> _instances = new();
         private int _nextId = 1;
 
-        public ItemInstance? GetById(int id)
+        public Task<ItemInstance?> GetById(int id)
         {
-            return _instances.FirstOrDefault(i => i.Id == id);
+            return Task.FromResult(_instances.FirstOrDefault(i => i.Id == id));
         }
 
-        public IEnumerable<ItemInstance> GetAll()
+        public Task<IEnumerable<ItemInstance>> GetAll()
         {
-            return _instances;
+            return Task.FromResult<IEnumerable<ItemInstance>>(_instances);
         }
 
-        public void Add(ItemInstance instance)
+        public Task Add(ItemInstance instance)
         {
             instance.Id = _nextId++;
             instance.CreatedAt = DateTime.UtcNow;
             instance.UpdatedAt = DateTime.UtcNow;
             _instances.Add(instance);
+            return Task.CompletedTask;
         }
 
-        public void Update(ItemInstance instance)
+        public Task Update(ItemInstance instance)
         {
-            var existing = GetById(instance.Id);
-            if (existing == null) return;
+            var existing = _instances.FirstOrDefault(i => i.Id == instance.Id);
+            if (existing == null) return Task.CompletedTask;
 
             existing.SerialNumber = instance.SerialNumber;
             existing.ExpiryDate = instance.ExpiryDate;
             existing.Status = instance.Status;
             existing.Metadata = instance.Metadata;
             existing.UpdatedAt = DateTime.UtcNow;
+            return Task.CompletedTask;
         }
 
-        public void Delete(int id)
+        public Task Delete(int id)
         {
             _instances.RemoveAll(i => i.Id == id);
+            return Task.CompletedTask;
         }
 
-        public IEnumerable<ItemInstance> GetByItemId(int itemId)
+        public Task<IEnumerable<ItemInstance>> GetByItemId(int itemId)
         {
-            return _instances.Where(i => i.ItemId == itemId);
+            return Task.FromResult<IEnumerable<ItemInstance>>(_instances.Where(i => i.ItemId == itemId));
         }
 
-        public IEnumerable<ItemInstance> GetByStatus(string status)
+        public Task<IEnumerable<ItemInstance>> GetByStatus(string status)
         {
-            return _instances.Where(i => i.Status == status);
+            return Task.FromResult<IEnumerable<ItemInstance>>(_instances.Where(i => i.Status == status));
         }
 
-        public IEnumerable<ItemInstance> GetExpiringSoon(DateTime before)
+        public Task<IEnumerable<ItemInstance>> GetExpiringSoon(DateTime before)
         {
-            return _instances.Where(i =>
+            return Task.FromResult<IEnumerable<ItemInstance>>(_instances.Where(i =>
                 i.ExpiryDate.HasValue &&
-                i.ExpiryDate.Value <= before);
+                i.ExpiryDate.Value <= before));
         }
     }
 }
