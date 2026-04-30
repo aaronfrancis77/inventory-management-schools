@@ -1,6 +1,7 @@
 using DaymapInventory.Data;
 using DaymapInventory.Interfaces;
 using DaymapInventory.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace DaymapInventory.Repositories
 {
@@ -13,47 +14,37 @@ namespace DaymapInventory.Repositories
             _context = context;
         }
 
-        public Tag? GetById(int id)
-        {
-            return _context.Tags.Find(id);
-        }
+        public async Task<Tag?> GetById(int id) => await _context.Tags.FindAsync(id);
 
-        public IEnumerable<Tag> GetAll()
-        {
-            return _context.Tags.ToList();
-        }
+        public async Task<IEnumerable<Tag>> GetAll() => await _context.Tags.ToListAsync();
 
-        public void Add(Tag entity)
+        public async Task Add(Tag entity)
         {
             entity.CreatedAt = DateTime.UtcNow;
-            _context.Tags.Add(entity);
-            _context.SaveChanges();
+            await _context.Tags.AddAsync(entity);
+            await _context.SaveChangesAsync();
         }
 
-        public void Update(Tag entity)
+        public async Task Update(Tag entity)
         {
             _context.Tags.Update(entity);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
-        public void Delete(int id)
+        public async Task Delete(int id)
         {
-            var tag = _context.Tags.Find(id);
+            var tag = await _context.Tags.FindAsync(id);
             if (tag != null)
             {
                 _context.Tags.Remove(tag);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
             }
         }
 
-        public Tag? GetByName(string name)
-        {
-            return _context.Tags.FirstOrDefault(t => t.Name == name);
-        }
+        public async Task<Tag?> GetByName(string name) =>
+            await _context.Tags.FirstOrDefaultAsync(t => t.Name == name);
 
-        public IEnumerable<Tag> GetDefaults()
-        {
-            return _context.Tags.Where(t => t.IsDefault).ToList();
-        }
+        public async Task<IEnumerable<Tag>> GetDefaults() =>
+            await _context.Tags.Where(t => t.IsDefault).ToListAsync();
     }
 }

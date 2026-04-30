@@ -1,6 +1,7 @@
 using DaymapInventory.Data;
 using DaymapInventory.Interfaces;
 using DaymapInventory.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace DaymapInventory.Repositories
 {
@@ -13,56 +14,44 @@ namespace DaymapInventory.Repositories
             _context = context;
         }
 
-        public ItemInstance? GetById(int id)
-        {
-            return _context.ItemInstances.Find(id);
-        }
+        public async Task<ItemInstance?> GetById(int id) => await _context.ItemInstances.FindAsync(id);
 
-        public IEnumerable<ItemInstance> GetAll()
-        {
-            return _context.ItemInstances.ToList();
-        }
+        public async Task<IEnumerable<ItemInstance>> GetAll() => await _context.ItemInstances.ToListAsync();
 
-        public void Add(ItemInstance entity)
+        public async Task Add(ItemInstance entity)
         {
             entity.CreatedAt = DateTime.UtcNow;
             entity.UpdatedAt = DateTime.UtcNow;
-            _context.ItemInstances.Add(entity);
-            _context.SaveChanges();
+            await _context.ItemInstances.AddAsync(entity);
+            await _context.SaveChangesAsync();
         }
 
-        public void Update(ItemInstance entity)
+        public async Task Update(ItemInstance entity)
         {
             entity.UpdatedAt = DateTime.UtcNow;
             _context.ItemInstances.Update(entity);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
-        public void Delete(int id)
+        public async Task Delete(int id)
         {
-            var instance = _context.ItemInstances.Find(id);
+            var instance = await _context.ItemInstances.FindAsync(id);
             if (instance != null)
             {
                 _context.ItemInstances.Remove(instance);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
             }
         }
 
-        public IEnumerable<ItemInstance> GetByItemId(int itemId)
-        {
-            return _context.ItemInstances.Where(ii => ii.ItemId == itemId).ToList();
-        }
+        public async Task<IEnumerable<ItemInstance>> GetByItemId(int itemId) =>
+            await _context.ItemInstances.Where(ii => ii.ItemId == itemId).ToListAsync();
 
-        public IEnumerable<ItemInstance> GetByStatus(string status)
-        {
-            return _context.ItemInstances.Where(ii => ii.Status == status).ToList();
-        }
+        public async Task<IEnumerable<ItemInstance>> GetByStatus(string status) =>
+            await _context.ItemInstances.Where(ii => ii.Status == status).ToListAsync();
 
-        public IEnumerable<ItemInstance> GetExpiringSoon(DateTime before)
-        {
-            return _context.ItemInstances
+        public async Task<IEnumerable<ItemInstance>> GetExpiringSoon(DateTime before) =>
+            await _context.ItemInstances
                 .Where(ii => ii.ExpiryDate.HasValue && ii.ExpiryDate.Value <= before)
-                .ToList();
-        }
+                .ToListAsync();
     }
 }

@@ -1,6 +1,7 @@
 using DaymapInventory.Data;
 using DaymapInventory.Interfaces;
 using DaymapInventory.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace DaymapInventory.Repositories
 {
@@ -13,49 +14,39 @@ namespace DaymapInventory.Repositories
             _context = context;
         }
 
-        public Item? GetById(int id)
-        {
-            return _context.Items.Find(id);
-        }
+        public async Task<Item?> GetById(int id) => await _context.Items.FindAsync(id);
 
-        public IEnumerable<Item> GetAll()
-        {
-            return _context.Items.ToList();
-        }
+        public async Task<IEnumerable<Item>> GetAll() => await _context.Items.ToListAsync();
 
-        public void Add(Item entity)
+        public async Task Add(Item entity)
         {
             entity.CreatedAt = DateTime.UtcNow;
             entity.UpdatedAt = DateTime.UtcNow;
-            _context.Items.Add(entity);
-            _context.SaveChanges();
+            await _context.Items.AddAsync(entity);
+            await _context.SaveChangesAsync();
         }
 
-        public void Update(Item entity)
+        public async Task Update(Item entity)
         {
             entity.UpdatedAt = DateTime.UtcNow;
             _context.Items.Update(entity);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
-        public void Delete(int id)
+        public async Task Delete(int id)
         {
-            var item = _context.Items.Find(id);
+            var item = await _context.Items.FindAsync(id);
             if (item != null)
             {
                 _context.Items.Remove(item);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
             }
         }
 
-        public IEnumerable<Item> GetByStatus(string status)
-        {
-            return _context.Items.Where(i => i.Status == status).ToList();
-        }
+        public async Task<IEnumerable<Item>> GetByStatus(string status) =>
+            await _context.Items.Where(i => i.Status == status).ToListAsync();
 
-        public IEnumerable<Item> GetLowStock()
-        {
-            return _context.Items.Where(i => i.StockCount <= i.LowStockThreshold).ToList();
-        }
+        public async Task<IEnumerable<Item>> GetLowStock() =>
+            await _context.Items.Where(i => i.StockCount <= i.LowStockThreshold).ToListAsync();
     }
 }

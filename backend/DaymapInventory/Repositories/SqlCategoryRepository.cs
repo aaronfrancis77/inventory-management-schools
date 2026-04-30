@@ -1,6 +1,7 @@
 using DaymapInventory.Data;
 using DaymapInventory.Interfaces;
 using DaymapInventory.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace DaymapInventory.Repositories
 {
@@ -13,42 +14,34 @@ namespace DaymapInventory.Repositories
             _context = context;
         }
 
-        public Category? GetById(int id)
-        {
-            return _context.Categories.Find(id);
-        }
+        public async Task<Category?> GetById(int id) => await _context.Categories.FindAsync(id);
 
-        public IEnumerable<Category> GetAll()
-        {
-            return _context.Categories.ToList();
-        }
+        public async Task<IEnumerable<Category>> GetAll() => await _context.Categories.ToListAsync();
 
-        public void Add(Category entity)
+        public async Task Add(Category entity)
         {
             entity.CreatedAt = DateTime.UtcNow;
-            _context.Categories.Add(entity);
-            _context.SaveChanges();
+            await _context.Categories.AddAsync(entity);
+            await _context.SaveChangesAsync();
         }
 
-        public void Update(Category entity)
+        public async Task Update(Category entity)
         {
             _context.Categories.Update(entity);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
-        public void Delete(int id)
+        public async Task Delete(int id)
         {
-            var category = _context.Categories.Find(id);
+            var category = await _context.Categories.FindAsync(id);
             if (category != null)
             {
                 _context.Categories.Remove(category);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
             }
         }
 
-        public Category? GetByName(string name)
-        {
-            return _context.Categories.FirstOrDefault(c => c.Name == name);
-        }
+        public async Task<Category?> GetByName(string name) =>
+            await _context.Categories.FirstOrDefaultAsync(c => c.Name == name);
     }
 }

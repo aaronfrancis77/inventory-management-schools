@@ -1,6 +1,7 @@
 using DaymapInventory.Data;
 using DaymapInventory.Interfaces;
 using DaymapInventory.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace DaymapInventory.Repositories
 {
@@ -13,47 +14,27 @@ namespace DaymapInventory.Repositories
             _context = context;
         }
 
-        public Transaction? GetById(int id)
-        {
-            return _context.Transactions.Find(id);
-        }
+        public async Task<Transaction?> GetById(int id) => await _context.Transactions.FindAsync(id);
 
-        public IEnumerable<Transaction> GetAll()
-        {
-            return _context.Transactions.ToList();
-        }
+        public async Task<IEnumerable<Transaction>> GetAll() => await _context.Transactions.ToListAsync();
 
-        public void Add(Transaction entity)
+        public async Task Add(Transaction entity)
         {
             entity.CreatedAt = DateTime.UtcNow;
-            _context.Transactions.Add(entity);
-            _context.SaveChanges();
+            await _context.Transactions.AddAsync(entity);
+            await _context.SaveChangesAsync();
         }
 
-        public void Update(Transaction entity)
-        {
-            _context.Transactions.Update(entity);
-            _context.SaveChanges();
-        }
+        public Task Update(Transaction entity) =>
+            throw new InvalidOperationException("Transactions are append-only. Create a new Adjustment transaction instead.");
 
-        public void Delete(int id)
-        {
-            var transaction = _context.Transactions.Find(id);
-            if (transaction != null)
-            {
-                _context.Transactions.Remove(transaction);
-                _context.SaveChanges();
-            }
-        }
+        public Task Delete(int id) =>
+            throw new InvalidOperationException("Transactions cannot be deleted. They form an immutable audit log.");
 
-        public IEnumerable<Transaction> GetByItemId(int itemId)
-        {
-            return _context.Transactions.Where(t => t.ItemId == itemId).ToList();
-        }
+        public async Task<IEnumerable<Transaction>> GetByItemId(int itemId) =>
+            await _context.Transactions.Where(t => t.ItemId == itemId).ToListAsync();
 
-        public IEnumerable<Transaction> GetByType(string type)
-        {
-            return _context.Transactions.Where(t => t.Type == type).ToList();
-        }
+        public async Task<IEnumerable<Transaction>> GetByType(string type) =>
+            await _context.Transactions.Where(t => t.Type == type).ToListAsync();
     }
 }
