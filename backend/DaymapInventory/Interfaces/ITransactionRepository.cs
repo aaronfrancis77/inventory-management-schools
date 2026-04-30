@@ -4,7 +4,7 @@ namespace DaymapInventory.Interfaces
 {
     public interface ITransactionRepository : IRepository<Transaction>
     {
-        IEnumerable<Transaction> GetByItemId(int itemId);
-        IEnumerable<Transaction> GetByType(string type);
+        Task<IEnumerable<Transaction>> GetByItemId(int itemId);
+        Task<IEnumerable<Transaction>> GetByType(string type);
     }
 }

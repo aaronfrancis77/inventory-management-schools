@@ -4,6 +4,6 @@ namespace DaymapInventory.Interfaces
 {
     public interface ICategoryRepository : IRepository<Category>
     {
-        Category? GetByName(string name);
+        Task<Category?> GetByName(string name);
     }
 }
