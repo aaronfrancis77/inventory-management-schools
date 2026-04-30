@@ -13,15 +13,15 @@ namespace DaymapInventory.Tests
         [TestInitialize]
         public void Setup()
         {
-            // Programming against the interface means we can swap in the SQL
-            // implementation here later without changing a single test.
+            // Programming against the interface mean we can swap in the SQL
+           
             _repository = new InMemoryItemRepository();
         }
 
         [TestMethod]
         public void Add_ShouldAssignIdAndStore()
         {
-            var item = new Item { Name = "Textbook", Description = "Year 10 Maths" };
+            var item = new Item { Name = "Textbook", Description = "Year 12 Maths" };
 
             _repository.Add(item);
 

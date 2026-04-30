@@ -1,5 +1,7 @@
+using DaymapInventory.Data;
 using DaymapInventory.Interfaces;
 using DaymapInventory.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,16 +10,19 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Dependency Injection - swap any In-Memory repo for a Sql implementation when the DB is ready
-builder.Services.AddSingleton<IItemRepository, InMemoryItemRepository>();
-builder.Services.AddSingleton<IItemInstanceRepository, InMemoryItemInstanceRepository>();
-builder.Services.AddSingleton<ICategoryRepository, InMemoryCategoryRepository>();
-builder.Services.AddSingleton<ITagRepository, InMemoryTagRepository>();
-builder.Services.AddSingleton<ITransactionRepository, InMemoryTransactionRepository>();
-// IRequestCookieCollection, 
+// EF Core - SQL Server
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Dependency Injection - SQL Repositories
+builder.Services.AddScoped<IItemRepository, SqlItemRepository>();
+builder.Services.AddScoped<IItemInstanceRepository, SqlItemInstanceRepository>();
+builder.Services.AddScoped<ICategoryRepository, SqlCategoryRepository>();
+builder.Services.AddScoped<ITagRepository, SqlTagRepository>();
+builder.Services.AddScoped<ITransactionRepository, SqlTransactionRepository>();
+
 var app = builder.Build();
 
-// Configure the HTTP request pipeline
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
