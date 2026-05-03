@@ -32,6 +32,13 @@ builder.Services.AddScoped<LocalDateTimeFilter>();
 
 var app = builder.Build();
 
+// Auto-apply EF migrations on startup (useful in Docker)
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    db.Database.Migrate();
+}
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
