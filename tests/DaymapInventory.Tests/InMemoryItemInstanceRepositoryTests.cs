@@ -1,4 +1,3 @@
-using System.Linq;
 using DaymapInventory.Interfaces;
 using DaymapInventory.Models;
 using DaymapInventory.Repositories;
@@ -9,7 +8,7 @@ namespace DaymapInventory.Tests
     [TestClass]
     public class InMemoryItemInstanceRepositoryTests
     {
-        private IItemInstanceRepository _repository;
+        private IItemInstanceRepository _repository = null!;
 
         [TestInitialize]
         public void Setup()
@@ -18,7 +17,7 @@ namespace DaymapInventory.Tests
         }
 
         [TestMethod]
-        public void Add_ShouldAssignIdAndStore()
+        public async Task Add_ShouldAssignIdAndStore()
         {
             var instance = new ItemInstance
             {
@@ -27,14 +26,14 @@ namespace DaymapInventory.Tests
                 Status = "Available"
             };
 
-            _repository.Add(instance);
+            await _repository.Add(instance);
 
             Assert.IsTrue(instance.Id > 0);
-            Assert.AreEqual(1, _repository.GetAll().Count());
+            Assert.AreEqual(1, (await _repository.GetAll()).Count());
         }
 
         [TestMethod]
-        public void GetById_ShouldReturnCorrectInstance()
+        public async Task GetById_ShouldReturnCorrectInstance()
         {
             var instance = new ItemInstance
             {
@@ -43,9 +42,9 @@ namespace DaymapInventory.Tests
                 Status = "Available"
             };
 
-            _repository.Add(instance);
+            await _repository.Add(instance);
 
-            var result = _repository.GetById(instance.Id);
+            var result = await _repository.GetById(instance.Id);
 
             Assert.IsNotNull(result);
             Assert.AreEqual("LAPTOP-002", result.SerialNumber);
@@ -53,15 +52,15 @@ namespace DaymapInventory.Tests
         }
 
         [TestMethod]
-        public void GetById_ShouldReturnNullWhenNotFound()
+        public async Task GetById_ShouldReturnNullWhenNotFound()
         {
-            var result = _repository.GetById(999);
+            var result = await _repository.GetById(999);
 
             Assert.IsNull(result);
         }
 
         [TestMethod]
-        public void Delete_ShouldRemoveInstance()
+        public async Task Delete_ShouldRemoveInstance()
         {
             var instance = new ItemInstance
             {
@@ -69,24 +68,33 @@ namespace DaymapInventory.Tests
                 SerialNumber = "DELETE-001"
             };
 
-            _repository.Add(instance);
+            await _repository.Add(instance);
+            await _repository.Delete(instance.Id);
 
-            _repository.Delete(instance.Id);
-
-            Assert.AreEqual(0, _repository.GetAll().Count());
-            Assert.IsNull(_repository.GetById(instance.Id));
+            Assert.AreEqual(0, (await _repository.GetAll()).Count());
+            Assert.IsNull(await _repository.GetById(instance.Id));
         }
 
         [TestMethod]
-        public void GetByItemId_ShouldReturnCorrectInstances()
+        public async Task GetByItemId_ShouldReturnCorrectInstances()
         {
-            _repository.Add(new ItemInstance { ItemId = 1, SerialNumber = "A001" });
-            _repository.Add(new ItemInstance { ItemId = 1, SerialNumber = "A002" });
-            _repository.Add(new ItemInstance { ItemId = 2, SerialNumber = "B001" });
+            await _repository.Add(new ItemInstance { ItemId = 1, SerialNumber = "A001" });
+            await _repository.Add(new ItemInstance { ItemId = 1, SerialNumber = "A002" });
+            await _repository.Add(new ItemInstance { ItemId = 2, SerialNumber = "B001" });
 
-            var results = _repository.GetByItemId(1);
+            var results = await _repository.GetByItemId(1);
 
             Assert.AreEqual(2, results.Count());
+        }
+
+        [TestMethod]
+        public async Task GetByItemId_ShouldShowCorrectCountAfterAddingInstance()
+        {
+            await _repository.Add(new ItemInstance { ItemId = 1, SerialNumber = "LAPTOP-001" });
+
+            var instances = await _repository.GetByItemId(1);
+
+            Assert.AreEqual(1, instances.Count());
         }
     }
 }
