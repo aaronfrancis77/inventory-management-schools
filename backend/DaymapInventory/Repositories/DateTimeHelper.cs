@@ -10,8 +10,7 @@ namespace DaymapInventory.Helpers
             _targetTimeZoneId = configuration["InventorySettings:LocalTimeZone"] ?? "UTC";
             
         }
-
-        
+        //Converts the UTC time to the local time
         public DateTime ConvertToLocal(DateTime utcDateTime)
         {
             if (utcDateTime.Kind != DateTimeKind.Utc)
@@ -20,7 +19,7 @@ namespace DaymapInventory.Helpers
             }
 
             try
-            {
+            {// Find the configured timezone by its system ID then converts it
                 var targetTimeZone = TimeZoneInfo.FindSystemTimeZoneById(_targetTimeZoneId);
                 return TimeZoneInfo.ConvertTimeFromUtc(utcDateTime, targetTimeZone);
             }

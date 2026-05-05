@@ -37,6 +37,17 @@ namespace DaymapInventory.Controllers
             return Ok(instance);
         }
 
+        // PUT: api/iteminstances/5
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(int id, [FromBody] ItemInstance instance)
+        {
+            var existing = await _instanceRepository.GetById(id);
+            if (existing == null) return NotFound();
+            instance.Id = id;
+            await _instanceRepository.Update(instance);
+            return Ok(await _instanceRepository.GetById(id));
+        }
+
         // GET: api/items/5/instances
         [HttpGet("/api/items/{itemId}/instances")]
         public async Task<IActionResult> GetByItemId(int itemId)

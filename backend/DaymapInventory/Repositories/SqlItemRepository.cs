@@ -14,7 +14,8 @@ namespace DaymapInventory.Repositories
             _context = context;
         }
 
-        public async Task<Item?> GetById(int id) => await _context.Items.FindAsync(id);
+        public async Task<Item?> GetById(int id) =>
+            await _context.Items.AsNoTracking().FirstOrDefaultAsync(i => i.Id == id);
 
         public async Task<IEnumerable<Item>> GetAll() => await _context.Items.ToListAsync();
 
@@ -28,8 +29,10 @@ namespace DaymapInventory.Repositories
 
         public async Task Update(Item entity)
         {
-            entity.UpdatedAt = DateTime.UtcNow;
-            _context.Items.Update(entity);
+            var existing = await _context.Items.FindAsync(entity.Id);
+            if (existing == null) return;
+            _context.Entry(existing).CurrentValues.SetValues(entity);
+            existing.UpdatedAt = DateTime.UtcNow;
             await _context.SaveChangesAsync();
         }
 

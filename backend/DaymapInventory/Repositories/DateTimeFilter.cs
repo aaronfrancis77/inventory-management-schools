@@ -13,7 +13,7 @@ namespace DaymapInventory.Filters
         {
             _dateTimeHelper = dateTimeHelper;
         }
-
+        // Runs just before the API result is sent back to the client
         public async Task OnResultExecutionAsync(ResultExecutingContext context, ResultExecutionDelegate next)
         {
             if (context.Result is ObjectResult objectResult && objectResult.Value != null)
@@ -23,7 +23,7 @@ namespace DaymapInventory.Filters
 
             await next();
         }
-
+        // Recursively traverses an object and converts all DateTime properties
         private void TraverseAndConvert(object obj)
         {
             if (obj == null) return;
