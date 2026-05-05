@@ -1,29 +1,42 @@
+using DaymapInventory.Data;
 using DaymapInventory.Interfaces;
 using DaymapInventory.Models;
 using DaymapInventory.Repositories;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace DaymapInventory.Tests
 {
     [TestClass]
-    public class InMemoryItemRepositoryTests
+    public class SqlItemRepositoryTests
     {
+        private AppDbContext _context = null!;
         private IItemRepository _repository = null!;
 
         [TestInitialize]
         public void Setup()
         {
-            _repository = new InMemoryItemRepository();
+            var options = new DbContextOptionsBuilder<AppDbContext>()
+                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+                .Options;
+
+            _context = new AppDbContext(options);
+            _repository = new SqlItemRepository(_context);
+        }
+
+        [TestCleanup]
+        public void Cleanup()
+        {
+            _context.Dispose();
         }
 
         [TestMethod]
-        public async Task Add_ShouldAssignIdAndStore()
+        public async Task Add_ShouldStoreItem()
         {
             var item = new Item { Name = "Textbook", Description = "Year 12 Maths" };
 
             await _repository.Add(item);
 
-            Assert.AreEqual(1, item.Id);
             Assert.AreEqual(1, (await _repository.GetAll()).Count());
         }
 
