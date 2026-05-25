@@ -12,32 +12,54 @@ namespace DaymapInventory.Models
         [MaxLength(100)]
         public string Name { get; set; } = string.Empty;
 
-        [MaxLength(500)]
-        public string? Description { get; set; }
+        [Required]
+        public int ItemId { get; set; }
 
         [Required]
-        public string DataType { get; set; } = CustomFieldDataType.Text.ToString();
+        public string ControlType { get; set; } = CustomFieldControlType.Text.ToString();
+
+        [Required]
+        public string DataType { get; set; } = CustomFieldDataType.String.ToString();
 
         public bool IsRequired { get; set; } = false;
 
-        public string? DefaultValue { get; set; }
+        public bool IsUnique { get; set; } = false;
 
-        public int? CategoryId { get; set; }
+        public string? DefaultValue { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-        // Navigation properties
         [JsonIgnore]
-        [System.ComponentModel.DataAnnotations.Schema.ForeignKey("CategoryId")]
-        public Category? Category { get; set; }
+        [System.ComponentModel.DataAnnotations.Schema.ForeignKey("ItemId")]
+        public Item? Item { get; set; }
+
+        [JsonIgnore]
+        public ICollection<CustomFieldValue> Values { get; set; } = new List<CustomFieldValue>();
+    }
+
+    public enum CustomFieldControlType
+    {
+        Label,
+        Text,
+        Number,
+        Date,
+        DateTime,
+        Time,
+        Dropdown,
+        Autocomplete,
+        Radio,
+        Checkbox,
+        Slider
     }
 
     public enum CustomFieldDataType
     {
-        Text,
+        String,
         Number,
+        Boolean,
         Date,
-        Dropdown,
-        Boolean
+        DateTime,
+        Time,
+        Integer
     }
 }
