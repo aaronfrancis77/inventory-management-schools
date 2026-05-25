@@ -19,6 +19,10 @@ namespace DaymapInventory.Data
         public DbSet<ItemTag> ItemTags { get; set; }
         public DbSet<CategoryTag> CategoryTags { get; set; }
 
+        // Custom fields
+        public DbSet<CustomField> CustomFields { get; set; }
+        public DbSet<CustomFieldValue> CustomFieldValues { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             // ItemCategory composite primary key
@@ -80,6 +84,39 @@ namespace DaymapInventory.Data
                 .HasOne(ii => ii.Item)
                 .WithMany(i => i.Instances)
                 .HasForeignKey(ii => ii.ItemId);
+
+            // CustomField foreign key
+            modelBuilder.Entity<CustomField>()
+                .HasOne(cf => cf.Item)
+                .WithMany()
+                .HasForeignKey(cf => cf.ItemId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Name must be unique per item
+            modelBuilder.Entity<CustomField>()
+                .HasIndex(cf => new { cf.ItemId, cf.Name })
+                .IsUnique();
+
+            // CustomFieldValue foreign keys
+            modelBuilder.Entity<CustomFieldValue>()
+                .HasOne(cfv => cfv.CustomField)
+                .WithMany(cf => cf.Values)
+                .HasForeignKey(cfv => cfv.CustomFieldId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<CustomFieldValue>()
+                .HasOne(cfv => cfv.Item)
+                .WithMany()
+                .HasForeignKey(cfv => cfv.ItemId)
+                .IsRequired(false)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<CustomFieldValue>()
+                .HasOne(cfv => cfv.ItemInstance)
+                .WithMany()
+                .HasForeignKey(cfv => cfv.ItemInstanceId)
+                .IsRequired(false)
+                .OnDelete(DeleteBehavior.NoAction);
         }
     }
 }
