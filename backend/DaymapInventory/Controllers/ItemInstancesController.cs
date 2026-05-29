@@ -10,11 +10,16 @@ namespace DaymapInventory.Controllers
     {
         private readonly IItemInstanceRepository _instanceRepository;
         private readonly IItemRepository _itemRepository;
+        private readonly ICustomFieldValueRepository _customFieldValueRepository;
 
-        public ItemInstancesController(IItemInstanceRepository instanceRepository, IItemRepository itemRepository)
+        public ItemInstancesController(
+            IItemInstanceRepository instanceRepository,
+            IItemRepository itemRepository,
+            ICustomFieldValueRepository customFieldValueRepository)
         {
             _instanceRepository = instanceRepository;
             _itemRepository = itemRepository;
+            _customFieldValueRepository = customFieldValueRepository;
         }
 
         // POST: api/iteminstances
@@ -23,12 +28,11 @@ namespace DaymapInventory.Controllers
         {
             var item = await _itemRepository.GetById(instance.ItemId);
             if (item == null) return NotFound($"Item with id {instance.ItemId} not found.");
-
             // Uniqueness check: if a serial number is provided, ensure no other instance
             // for the same item has the same serial number.
             if (!string.IsNullOrWhiteSpace(instance.SerialNumber))
             {
-                var existing = (await _instanceRepository.GetByItemId(instance.ItemId))
+                var existing = (await _instanceRepository.GetByItemInstanceIdWithFieldDetails(instance.ItemId))
                     .FirstOrDefault(ii => string.Equals(ii.SerialNumber, instance.SerialNumber, StringComparison.OrdinalIgnoreCase));
                 if (existing != null)
                 {
@@ -46,7 +50,19 @@ namespace DaymapInventory.Controllers
         {
             var instance = await _instanceRepository.GetById(id);
             if (instance == null) return NotFound();
-            return Ok(instance);
+
+            var customFieldValues = await _customFieldValueRepository.GetByItemInstanceId(id);
+
+            return Ok(new
+            {
+                instance.Id,
+                instance.ItemId,
+                instance.SerialNumber,
+                instance.Status,
+                instance.CreatedAt,
+                instance.UpdatedAt,
+                CustomFieldValues = customFieldValues
+            });
         }
 
         // PUT: api/iteminstances/5
@@ -55,8 +71,10 @@ namespace DaymapInventory.Controllers
         {
             var existing = await _instanceRepository.GetById(id);
             if (existing == null) return NotFound();
+
             instance.Id = id;
             await _instanceRepository.Update(instance);
+
             return Ok(await _instanceRepository.GetById(id));
         }
 
@@ -66,6 +84,7 @@ namespace DaymapInventory.Controllers
         {
             var item = await _itemRepository.GetById(itemId);
             if (item == null) return NotFound();
+
             var instances = await _instanceRepository.GetByItemId(itemId);
             var instanceList = instances.ToList();
             return Ok(new { itemId, count = instanceList.Count, instances = instanceList });

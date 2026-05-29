@@ -9,10 +9,14 @@ namespace DaymapInventory.Controllers
     public class ItemsController : ControllerBase
     {
         private readonly IItemRepository _repository;
+        private readonly ICustomFieldValueRepository _customFieldValueRepository;
 
-        public ItemsController(IItemRepository repository)
+        public ItemsController(
+            IItemRepository repository,
+            ICustomFieldValueRepository customFieldValueRepository)
         {
             _repository = repository;
+            _customFieldValueRepository = customFieldValueRepository;
         }
 
         // GET: api/items
@@ -29,7 +33,19 @@ namespace DaymapInventory.Controllers
         {
             var item = await _repository.GetById(id);
             if (item == null) return NotFound();
-            return Ok(item);
+
+            var customFieldValues = await _customFieldValueRepository.GetByItemIdWithFieldDetails(id);
+
+            return Ok(new
+            {
+                item.Id,
+                item.Name,
+                item.Description,
+                item.CategoryId,
+                item.CreatedAt,
+                item.UpdatedAt,
+                CustomFieldValues = customFieldValues
+            });
         }
 
         // POST: api/items
@@ -45,8 +61,10 @@ namespace DaymapInventory.Controllers
         public async Task<IActionResult> Update(int id, [FromBody] Item item)
         {
             if (await _repository.GetById(id) == null) return NotFound();
+
             item.Id = id;
             await _repository.Update(item);
+
             var updated = await _repository.GetById(id);
             return Ok(updated);
         }
@@ -56,9 +74,9 @@ namespace DaymapInventory.Controllers
         public async Task<IActionResult> Delete(int id)
         {
             if (await _repository.GetById(id) == null) return NotFound();
+
             await _repository.Delete(id);
             return NoContent();
         }
-
     }
 }
