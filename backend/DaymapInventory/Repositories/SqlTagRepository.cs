@@ -41,8 +41,16 @@ namespace DaymapInventory.Repositories
             }
         }
 
+<<<<<<< Updated upstream
         public async Task<Tag?> GetByName(string name) =>
             await _context.Tags.FirstOrDefaultAsync(t => t.Name == name);
+=======
+        public Tag? GetByName(string name)
+        {
+            var normalizedName = name.ToLower();
+            return _context.Tags.FirstOrDefault(t => t.Name.ToLower() == normalizedName);
+        }
+>>>>>>> Stashed changes
 
         public async Task<IEnumerable<Tag>> GetDefaults() =>
             await _context.Tags.Where(t => t.IsDefault).ToListAsync();

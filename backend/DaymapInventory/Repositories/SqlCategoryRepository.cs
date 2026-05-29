@@ -41,7 +41,15 @@ namespace DaymapInventory.Repositories
             }
         }
 
+<<<<<<< Updated upstream
         public async Task<Category?> GetByName(string name) =>
             await _context.Categories.FirstOrDefaultAsync(c => c.Name == name);
+=======
+        public Category? GetByName(string name)
+        {
+            var normalizedName = name.ToLower();
+            return _context.Categories.FirstOrDefault(c => c.Name.ToLower() == normalizedName);
+        }
+>>>>>>> Stashed changes
     }
 }
