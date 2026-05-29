@@ -61,6 +61,20 @@ namespace DaymapInventory.Controllers
                 if (instance == null) return NotFound($"ItemInstance {value.ItemInstanceId.Value} not found.");
             }
 
+            // Uniqueness check: if the custom field is marked IsUnique and this value is for an instance,
+            // reject if another instance already has the same value for this field
+            if (cf.IsUnique && value.ItemInstanceId.HasValue)
+            {
+                var existingValues = await _repo.GetByCustomFieldId(value.CustomFieldId);
+                var duplicate = existingValues.FirstOrDefault(v =>
+                    v.ItemInstanceId.HasValue &&
+                    v.ItemInstanceId != value.ItemInstanceId &&
+                    string.Equals(v.Value, value.Value, StringComparison.OrdinalIgnoreCase));
+
+                if (duplicate != null)
+                    return Conflict($"A unique custom field '{cf.Name}' already has the value '{value.Value}' on another instance.");
+            }
+
             await _repo.Add(value);
             return CreatedAtAction(nameof(GetById), new { id = value.Id }, value);
         }
