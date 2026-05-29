@@ -24,6 +24,18 @@ namespace DaymapInventory.Controllers
             var item = await _itemRepository.GetById(instance.ItemId);
             if (item == null) return NotFound($"Item with id {instance.ItemId} not found.");
 
+            // Uniqueness check: if a serial number is provided, ensure no other instance
+            // for the same item has the same serial number.
+            if (!string.IsNullOrWhiteSpace(instance.SerialNumber))
+            {
+                var existing = (await _instanceRepository.GetByItemId(instance.ItemId))
+                    .FirstOrDefault(ii => string.Equals(ii.SerialNumber, instance.SerialNumber, StringComparison.OrdinalIgnoreCase));
+                if (existing != null)
+                {
+                    return Conflict($"An item instance with serial number '{instance.SerialNumber}' already exists for item {instance.ItemId}.");
+                }
+            }
+
             await _instanceRepository.Add(instance);
             return CreatedAtAction(nameof(GetById), new { id = instance.Id }, instance);
         }
