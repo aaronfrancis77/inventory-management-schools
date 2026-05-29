@@ -4,12 +4,6 @@ namespace DaymapInventory.Interfaces
 {
     public interface ICustomFieldValueRepository : IRepository<CustomFieldValue>
     {
-        Task<CustomFieldValue?> GetById(int id);
-        Task<IEnumerable<CustomFieldValue>> GetAll();
-        Task Add(CustomFieldValue entity);
-        Task Update(CustomFieldValue entity);
-        Task Delete(int id);
-
         Task<IEnumerable<CustomFieldValue>> GetByCustomFieldId(int customFieldId);
         Task<IEnumerable<CustomFieldValue>> GetByItemId(int itemId);
         Task<IEnumerable<CustomFieldValue>> GetByItemInstanceId(int itemInstanceId);
