@@ -32,7 +32,7 @@ namespace DaymapInventory.Controllers
             // for the same item has the same serial number.
             if (!string.IsNullOrWhiteSpace(instance.SerialNumber))
             {
-                var existing = (await _instanceRepository.GetByItemInstanceIdWithFieldDetails(instance.ItemId))
+                var existing = (await _instanceRepository.GetByItemId(instance.ItemId))
                     .FirstOrDefault(ii => string.Equals(ii.SerialNumber, instance.SerialNumber, StringComparison.OrdinalIgnoreCase));
                 if (existing != null)
                 {

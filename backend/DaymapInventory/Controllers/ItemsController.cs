@@ -41,7 +41,6 @@ namespace DaymapInventory.Controllers
                 item.Id,
                 item.Name,
                 item.Description,
-                item.CategoryId,
                 item.CreatedAt,
                 item.UpdatedAt,
                 CustomFieldValues = customFieldValues
