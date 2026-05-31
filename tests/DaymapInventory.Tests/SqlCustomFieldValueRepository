@@ -1,0 +1,126 @@
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+namespace InventorySystem.Tests
+{
+    [TestClass]
+    public class SqlCustomFieldValueRepositoryTests
+    {
+        private SqlCustomFieldValueRepository _repository;
+
+        [TestInitialize]
+        public void Setup()
+        {
+            _repository = new SqlCustomFieldValueRepository();
+        }
+
+        [TestMethod]
+        public void Create_Should_Add_CustomFieldValue()
+        {
+            // Arrange
+            var value = new CustomFieldValue
+            {
+                Id = 1,
+                Value = "ABC123"
+            };
+
+            // Act
+            _repository.Create(value);
+
+            var result = _repository.GetById(1);
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual("ABC123", result.Value);
+        }
+
+        [TestMethod]
+        public void GetById_Should_Return_CustomFieldValue()
+        {
+            // Arrange
+            var value = new CustomFieldValue
+            {
+                Id = 2,
+                Value = "Room B12"
+            };
+
+            _repository.Create(value);
+
+            // Act
+            var result = _repository.GetById(2);
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual("Room B12", result.Value);
+        }
+
+        [TestMethod]
+        public void Update_Should_Modify_CustomFieldValue()
+        {
+            // Arrange
+            var value = new CustomFieldValue
+            {
+                Id = 3,
+                Value = "Old Value"
+            };
+
+            _repository.Create(value);
+
+            // Act
+            value.Value = "Updated Value";
+
+            _repository.Update(value);
+
+            var updatedValue = _repository.GetById(3);
+
+            // Assert
+            Assert.AreEqual("Updated Value", updatedValue.Value);
+        }
+
+        [TestMethod]
+        public void Delete_Should_Remove_CustomFieldValue()
+        {
+            // Arrange
+            var value = new CustomFieldValue
+            {
+                Id = 4,
+                Value = "Delete Me"
+            };
+
+            _repository.Create(value);
+
+            // Act
+            _repository.Delete(4);
+
+            var result = _repository.GetById(4);
+
+            // Assert
+            Assert.IsNull(result);
+        }
+
+        [TestMethod]
+        public void GetAll_Should_Return_All_CustomFieldValues()
+        {
+            // Arrange
+            var value1 = new CustomFieldValue
+            {
+                Id = 5,
+                Value = "Value One"
+            };
+
+            var value2 = new CustomFieldValue
+            {
+                Id = 6,
+                Value = "Value Two"
+            };
+
+            _repository.Create(value1);
+            _repository.Create(value2);
+
+            // Act
+            var results = _repository.GetAll();
+
+            // Assert
+            Assert.AreEqual(2, results.Count);
+        }
+    }
+}
