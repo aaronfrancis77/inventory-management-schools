@@ -47,6 +47,28 @@ namespace DaymapInventory.Controllers
             _ => true
         };
 
+        // GET: api/items/{id}/customfieldvalues
+        [HttpGet("/api/items/{id}/customfieldvalues")]
+        public async Task<IActionResult> GetByItemId(int id)
+        {
+            var item = await _itemRepository.GetById(id);
+            if (item == null) return NotFound($"Item {id} not found.");
+
+            var values = await _repo.GetByItemIdWithFieldDetails(id);
+            return Ok(values.Select(Project));
+        }
+
+        // GET: api/iteminstances/{id}/customfieldvalues
+        [HttpGet("/api/iteminstances/{id}/customfieldvalues")]
+        public async Task<IActionResult> GetByItemInstanceId(int id)
+        {
+            var instance = await _instanceRepository.GetById(id);
+            if (instance == null) return NotFound($"ItemInstance {id} not found.");
+
+            var values = await _repo.GetByItemInstanceIdWithFieldDetails(id);
+            return Ok(values.Select(Project));
+        }
+
         // GET: api/customfieldvalues
         [HttpGet]
         public async Task<IActionResult> GetAll()
