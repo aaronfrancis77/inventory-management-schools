@@ -42,7 +42,7 @@ namespace DaymapInventory.Filters
                 if (prop.PropertyType == typeof(DateTime) || prop.PropertyType == typeof(DateTime?))
                 {
                     var val = prop.GetValue(obj) as DateTime?;
-                    if (val.HasValue)
+                    if (val.HasValue && prop.GetSetMethod() != null)
                     {
                         prop.SetValue(obj, _dateTimeHelper.ConvertToLocal(val.Value));
                     }

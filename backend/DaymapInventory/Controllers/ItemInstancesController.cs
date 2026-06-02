@@ -51,7 +51,20 @@ namespace DaymapInventory.Controllers
             var instance = await _instanceRepository.GetById(id);
             if (instance == null) return NotFound();
 
-            var customFieldValues = await _customFieldValueRepository.GetByItemInstanceId(id);
+            var customFieldValues = (await _customFieldValueRepository.GetByItemInstanceIdWithFieldDetails(id))
+                .Select(cfv => new
+                {
+                    cfv.Id,
+                    cfv.CustomFieldId,
+                    FieldName = cfv.CustomField?.Name,
+                    ControlType = cfv.CustomField?.ControlType,
+                    DataType = cfv.CustomField?.DataType,
+                    cfv.ItemId,
+                    cfv.ItemInstanceId,
+                    cfv.Value,
+                    cfv.CreatedAt,
+                    cfv.UpdatedAt
+                });
 
             return Ok(new
             {

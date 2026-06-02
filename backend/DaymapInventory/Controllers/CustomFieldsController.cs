@@ -30,6 +30,17 @@ namespace DaymapInventory.Controllers
             return CreatedAtAction(nameof(GetById), new { id = field.Id }, field);
         }
 
+        // GET /api/items/{id}/customfields — list all field definitions for an item
+        [HttpGet("items/{id}/customfields")]
+        public async Task<IActionResult> GetByItemId(int id)
+        {
+            var item = await _itemRepository.GetById(id);
+            if (item == null) return NotFound($"Item {id} not found.");
+
+            var fields = await _repo.GetByItemId(id);
+            return Ok(fields);
+        }
+
         // GET /api/customfields/{id} — get a custom field definition
         [HttpGet("customfields/{id}")]
         public async Task<IActionResult> GetById(int id)

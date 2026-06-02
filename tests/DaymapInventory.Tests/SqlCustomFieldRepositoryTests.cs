@@ -1,162 +1,124 @@
+using DaymapInventory.Data;
+using DaymapInventory.Interfaces;
+using DaymapInventory.Models;
+using DaymapInventory.Repositories;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Collections.Generic;
 
-namespace InventorySystem.Tests
+namespace DaymapInventory.Tests
 {
-    public class CustomField
-    {
-        public int Id { get; set; }
-
-        // Fixes CS8618 warning
-        public string Name { get; set; } = string.Empty;
-    }
-
-    public class SqlCustomFieldRepository
-    {
-        private readonly List<CustomField> _fields = new();
-
-        public void Create(CustomField field)
-        {
-            _fields.Add(field);
-        }
-
-        // Fixes CS8603 warning
-        public CustomField? GetById(int id)
-        {
-            return _fields.Find(f => f.Id == id);
-        }
-
-        public void Update(CustomField updatedField)
-        {
-            var field = GetById(updatedField.Id);
-
-            if (field != null)
-            {
-                field.Name = updatedField.Name;
-            }
-        }
-
-        public void Delete(int id)
-        {
-            var field = GetById(id);
-
-            if (field != null)
-            {
-                _fields.Remove(field);
-            }
-        }
-
-        public List<CustomField> GetAll()
-        {
-            return _fields;
-        }
-    }
-
     [TestClass]
     public class SqlCustomFieldRepositoryTests
     {
-        // Fixes CS8618 warning
-        private SqlCustomFieldRepository _repository = null!;
+        private AppDbContext _context = null!;
+        private ICustomFieldRepository _repository = null!;
 
         [TestInitialize]
         public void Setup()
         {
-            _repository = new SqlCustomFieldRepository();
+            var options = new DbContextOptionsBuilder<AppDbContext>()
+                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+                .Options;
+
+            _context = new AppDbContext(options);
+            _repository = new SqlCustomFieldRepository(_context);
+
+            // Seed a parent item required by the CustomField FK
+            _context.Items.Add(new Item { Id = 1, Name = "Laptop" });
+            _context.SaveChanges();
+        }
+
+        [TestCleanup]
+        public void Cleanup()
+        {
+            _context.Dispose();
         }
 
         [TestMethod]
-        public void Create_Should_Add_CustomField()
+        public async Task Add_ShouldStoreCustomField()
         {
-            var field = new CustomField
-            {
-                Id = 1,
-                Name = "Laptop Serial"
-            };
+            var field = new CustomField { Name = "Serial Number", ItemId = 1 };
 
-            _repository.Create(field);
+            await _repository.Add(field);
 
-            var result = _repository.GetById(1);
+            Assert.AreEqual(1, (await _repository.GetAll()).Count());
+        }
+
+        [TestMethod]
+        public async Task GetById_ShouldReturnCorrectField()
+        {
+            var field = new CustomField { Name = "Brand", ItemId = 1, ControlType = "Text", DataType = "String" };
+            await _repository.Add(field);
+
+            var result = await _repository.GetById(field.Id);
 
             Assert.IsNotNull(result);
-            Assert.AreEqual("Laptop Serial", result.Name);
+            Assert.AreEqual("Brand", result.Name);
+            Assert.AreEqual("Text", result.ControlType);
         }
 
         [TestMethod]
-        public void GetById_Should_Return_Field()
+        public async Task GetById_ShouldReturnNullWhenNotFound()
         {
-            var field = new CustomField
-            {
-                Id = 2,
-                Name = "Room Number"
-            };
-
-            _repository.Create(field);
-
-            var result = _repository.GetById(2);
-
-            Assert.IsNotNull(result);
-            Assert.AreEqual("Room Number", result.Name);
-        }
-
-        [TestMethod]
-        public void Update_Should_Modify_Field()
-        {
-            var field = new CustomField
-            {
-                Id = 3,
-                Name = "Old Name"
-            };
-
-            _repository.Create(field);
-
-            field.Name = "Updated Name";
-            _repository.Update(field);
-
-            var updatedField = _repository.GetById(3);
-
-            Assert.IsNotNull(updatedField);
-            Assert.AreEqual("Updated Name", updatedField.Name);
-        }
-
-        [TestMethod]
-        public void Delete_Should_Remove_Field()
-        {
-            var field = new CustomField
-            {
-                Id = 4,
-                Name = "Delete Test"
-            };
-
-            _repository.Create(field);
-
-            _repository.Delete(4);
-
-            var result = _repository.GetById(4);
+            var result = await _repository.GetById(999);
 
             Assert.IsNull(result);
         }
 
         [TestMethod]
-        public void GetAll_Should_Return_All_Fields()
+        public async Task Update_ShouldModifyFieldName()
         {
-            var field1 = new CustomField
-            {
-                Id = 5,
-                Name = "Field One"
-            };
+            var field = new CustomField { Name = "Old Name", ItemId = 1 };
+            await _repository.Add(field);
 
-            var field2 = new CustomField
-            {
-                Id = 6,
-                Name = "Field Two"
-            };
+            field.Name = "New Name";
+            await _repository.Update(field);
 
-            _repository.Create(field1);
-            _repository.Create(field2);
+            var result = await _repository.GetById(field.Id);
+            Assert.AreEqual("New Name", result!.Name);
+        }
 
-            var results = _repository.GetAll();
+        [TestMethod]
+        public async Task Delete_ShouldRemoveField()
+        {
+            var field = new CustomField { Name = "Warranty", ItemId = 1 };
+            await _repository.Add(field);
 
-            Assert.AreEqual(2, results.Count);
+            await _repository.Delete(field.Id);
+
+            Assert.IsNull(await _repository.GetById(field.Id));
+            Assert.AreEqual(0, (await _repository.GetAll()).Count());
+        }
+
+        [TestMethod]
+        public async Task GetByItemId_ShouldReturnOnlyFieldsForThatItem()
+        {
+            _context.Items.Add(new Item { Id = 2, Name = "Projector" });
+            await _context.SaveChangesAsync();
+
+            await _repository.Add(new CustomField { Name = "Brand", ItemId = 1 });
+            await _repository.Add(new CustomField { Name = "Model", ItemId = 1 });
+            await _repository.Add(new CustomField { Name = "Resolution", ItemId = 2 });
+
+            var results = await _repository.GetByItemId(1);
+
+            Assert.AreEqual(2, results.Count());
+            Assert.IsTrue(results.All(f => f.ItemId == 1));
+        }
+
+        [TestMethod]
+        public async Task Delete_ShouldCascadeToCustomFieldValues()
+        {
+            var field = new CustomField { Name = "Purchase Date", ItemId = 1 };
+            await _repository.Add(field);
+
+            _context.CustomFieldValues.Add(new CustomFieldValue { CustomFieldId = field.Id, ItemId = 1, Value = "2024-01-01" });
+            await _context.SaveChangesAsync();
+
+            await _repository.Delete(field.Id);
+
+            var remainingValues = _context.CustomFieldValues.Where(v => v.CustomFieldId == field.Id).ToList();
+            Assert.AreEqual(0, remainingValues.Count);
         }
     }
 }
