@@ -20,7 +20,9 @@ namespace DaymapInventory.Models
         [Required]
         public string Status { get; set; } = InstanceStatus.Available.ToString();
 
-        public string? Metadata { get; set; } // JSON string for per-unit data
+        public string? Metadata { get; set; }
+
+        public int? CreatedBy { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;

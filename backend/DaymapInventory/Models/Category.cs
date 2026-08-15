@@ -15,6 +15,8 @@ namespace DaymapInventory.Models
         [MaxLength(500)]
         public string? Description { get; set; }
 
+        public int? CreatedBy { get; set; }
+
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         // Navigation properties — ignored in JSON to prevent circular references

@@ -14,6 +14,11 @@ namespace DaymapInventory.Models
 
         public bool IsDefault { get; set; } = false; // true = Daymap-provided, false = user-created
 
+        [MaxLength(7)]
+        public string? Colour { get; set; }
+
+        public int? CreatedBy { get; set; }
+
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         // Navigation properties — ignored in JSON to prevent circular references

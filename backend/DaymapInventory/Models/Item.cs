@@ -24,12 +24,11 @@ namespace DaymapInventory.Models
         [Required]
         public string Status { get; set; } = ItemStatus.Active.ToString();
 
+        public int? CreatedBy { get; set; }
+
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
-        
-        
-        
-    
+
         [JsonIgnore] public ICollection<ItemInstance> Instances { get; set; } = new List<ItemInstance>();
         [JsonIgnore] public ICollection<ItemCategory> ItemCategories { get; set; } = new List<ItemCategory>();
         [JsonIgnore] public ICollection<ItemTag> ItemTags { get; set; } = new List<ItemTag>();

@@ -22,9 +22,12 @@ namespace DaymapInventory.Models
         [MaxLength(500)]
         public string? Notes { get; set; }
 
+        public int LoanedToId { get; set; }
+
         [Required]
-        [MaxLength(200)]
-        public string PerformedBy { get; set; } = string.Empty; // Daymap user identifier (string, not FK)
+        public string Status { get; set; } = TransactionStatus.Active.ToString();
+
+        public int? CreatedBy { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
@@ -45,5 +48,12 @@ namespace DaymapInventory.Models
         Purchase,
         Restock,
         Adjustment
+    }
+
+    public enum TransactionStatus
+    {
+        Active,
+        Returned,
+        Overdue
     }
 }
