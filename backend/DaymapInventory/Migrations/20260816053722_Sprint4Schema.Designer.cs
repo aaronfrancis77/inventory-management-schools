@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DaymapInventory.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260815033802_Sprint1Schema")]
-    partial class Sprint1Schema
+    [Migration("20260816053722_Sprint4Schema")]
+    partial class Sprint4Schema
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
