@@ -140,5 +140,69 @@ namespace DaymapInventory.Tests
             Assert.AreEqual(2, results.Count());
             Assert.IsTrue(results.All(t => t.IsDefault));
         }
+
+
+        [TestMethod]
+        public async Task AssignToItem_ShouldCreateItemTagLink()
+        {
+            var item = new Item { Name = "Laptop" };
+            var tag = new Tag { Name = "Electronics" };
+            _context.Items.Add(item);
+            await _repository.Add(tag);
+            await _context.SaveChangesAsync();
+
+            await _repository.AssignToItem(item.Id, tag.Id);
+
+            Assert.IsTrue(await _repository.IsAssignedToItem(item.Id, tag.Id));
+        }
+
+        [TestMethod]
+        public async Task IsAssignedToItem_ShouldReturnFalseWhenNotAssigned()
+        {
+            var result = await _repository.IsAssignedToItem(1, 1);
+
+            Assert.IsFalse(result);
+        }
+
+        [TestMethod]
+        public async Task RemoveFromItem_ShouldDeleteItemTagLink()
+        {
+            var item = new Item { Name = "Projector" };
+            var tag = new Tag { Name = "AV Equipment" };
+            _context.Items.Add(item);
+            await _repository.Add(tag);
+            await _context.SaveChangesAsync();
+            await _repository.AssignToItem(item.Id, tag.Id);
+
+            await _repository.RemoveFromItem(item.Id, tag.Id);
+
+            Assert.IsFalse(await _repository.IsAssignedToItem(item.Id, tag.Id));
+        }
+
+        [TestMethod]
+        public async Task RemoveFromItem_NonExistentLink_ShouldNotThrow()
+        {
+            await _repository.RemoveFromItem(999, 999);
+
+            Assert.IsFalse(await _repository.IsAssignedToItem(999, 999));
+        }
+
+        [TestMethod]
+        public async Task GetTagsForItem_ShouldReturnOnlyAssignedTags()
+        {
+            var item = new Item { Name = "Whiteboard" };
+            var tagA = new Tag { Name = "Classroom" };
+            var tagB = new Tag { Name = "Unassigned" };
+            _context.Items.Add(item);
+            await _repository.Add(tagA);
+            await _repository.Add(tagB);
+            await _context.SaveChangesAsync();
+            await _repository.AssignToItem(item.Id, tagA.Id);
+
+            var results = await _repository.GetTagsForItem(item.Id);
+
+            Assert.AreEqual(1, results.Count());
+            Assert.AreEqual("Classroom", results.First().Name);
+        }
     }
 }

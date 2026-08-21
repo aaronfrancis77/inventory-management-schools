@@ -46,5 +46,34 @@ namespace DaymapInventory.Repositories
 
         public async Task<IEnumerable<Tag>> GetDefaults() =>
             await _context.Tags.Where(t => t.IsDefault).ToListAsync();
+
+        // Item tag assignment (SCRUM-93)
+
+        public async Task<bool> IsAssignedToItem(int itemId, int tagId) =>
+            await _context.ItemTags.AnyAsync(it => it.ItemId == itemId && it.TagId == tagId);
+
+        public async Task AssignToItem(int itemId, int tagId)
+        {
+            _context.ItemTags.Add(new ItemTag { ItemId = itemId, TagId = tagId });
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task RemoveFromItem(int itemId, int tagId)
+        {
+            var link = await _context.ItemTags
+                .FirstOrDefaultAsync(it => it.ItemId == itemId && it.TagId == tagId);
+
+            if (link != null)
+            {
+                _context.ItemTags.Remove(link);
+                await _context.SaveChangesAsync();
+            }
+        }
+
+        public async Task<IEnumerable<Tag>> GetTagsForItem(int itemId) =>
+            await _context.ItemTags
+                .Where(it => it.ItemId == itemId)
+                .Select(it => it.Tag!)
+                .ToListAsync();
     }
 }

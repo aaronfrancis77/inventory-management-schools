@@ -10,13 +10,16 @@ namespace DaymapInventory.Controllers
     {
         private readonly IItemRepository _repository;
         private readonly ICustomFieldValueRepository _customFieldValueRepository;
+        private readonly ITagRepository _tagRepository;
 
         public ItemsController(
             IItemRepository repository,
-            ICustomFieldValueRepository customFieldValueRepository)
+            ICustomFieldValueRepository customFieldValueRepository,
+            ITagRepository tagRepository)
         {
             _repository = repository;
             _customFieldValueRepository = customFieldValueRepository;
+            _tagRepository = tagRepository;
         }
 
         // GET: api/items
@@ -88,6 +91,43 @@ namespace DaymapInventory.Controllers
             if (await _repository.GetById(id) == null) return NotFound();
 
             await _repository.Delete(id);
+            return NoContent();
+        }
+
+        // GET: api/items/5/tags
+        [HttpGet("{id}/tags")]
+        public async Task<IActionResult> GetTags(int id)
+        {
+            if (await _repository.GetById(id) == null) return NotFound();
+
+            var tags = (await _tagRepository.GetTagsForItem(id))
+                .Select(t => new { t.Id, t.Name, t.Colour, t.IsDefault });
+
+            return Ok(tags);
+        }
+
+        // POST: api/items/5/tags/3
+        [HttpPost("{id}/tags/{tagId}")]
+        public async Task<IActionResult> AssignTag(int id, int tagId)
+        {
+            if (await _repository.GetById(id) == null) return NotFound();
+            if (await _tagRepository.GetById(tagId) == null) return NotFound();
+
+            if (await _tagRepository.IsAssignedToItem(id, tagId))
+                return Conflict($"Tag {tagId} is already assigned to item {id}.");
+
+            await _tagRepository.AssignToItem(id, tagId);
+            return NoContent();
+        }
+
+        // DELETE: api/items/5/tags/3
+        [HttpDelete("{id}/tags/{tagId}")]
+        public async Task<IActionResult> RemoveTag(int id, int tagId)
+        {
+            if (await _repository.GetById(id) == null) return NotFound();
+            if (await _tagRepository.GetById(tagId) == null) return NotFound();
+
+            await _tagRepository.RemoveFromItem(id, tagId);
             return NoContent();
         }
     }
