@@ -14,27 +14,29 @@ namespace DaymapInventory.Repositories
             _context = context;
         }
 
-        public async Task<Transaction?> GetById(int id) => await _context.Transactions.FindAsync(id);
-
-        public async Task<IEnumerable<Transaction>> GetAll() => await _context.Transactions.ToListAsync();
-
-        public async Task Add(Transaction entity)
+        public async Task<TransactionResponseDto> CreateAsync(CreateTransactionDto dto)
         {
-            entity.CreatedAt = DateTime.UtcNow;
-            await _context.Transactions.AddAsync(entity);
-            await _context.SaveChangesAsync();
+            throw new NotImplementedException();
         }
 
-        public Task Update(Transaction entity) =>
-            throw new InvalidOperationException("Transactions are append-only. Create a new Adjustment transaction instead.");
+        public async Task<IEnumerable<TransactionResponseDto>> GetAllAsync()
+        {
+            throw new NotImplementedException();
+        }
 
-        public Task Delete(int id) =>
-            throw new InvalidOperationException("Transactions cannot be deleted. They form an immutable audit log.");
+        public async Task<TransactionResponseDto?> GetByIdAsync(Guid id)
+        {
+            throw new NotImplementedException();
+        }
 
-        public async Task<IEnumerable<Transaction>> GetByItemId(int itemId) =>
-            await _context.Transactions.Where(t => t.ItemId == itemId).ToListAsync();
+        public async Task<IEnumerable<TransactionResponseDto>> GetByItemIdAsync(Guid itemId)
+        {
+            throw new NotImplementedException();
+        }
 
-        public async Task<IEnumerable<Transaction>> GetByType(string type) =>
-            await _context.Transactions.Where(t => t.Type == type).ToListAsync();
+        public async Task<IEnumerable<TransactionResponseDto>> GetByInstanceIdAsync(Guid instanceId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

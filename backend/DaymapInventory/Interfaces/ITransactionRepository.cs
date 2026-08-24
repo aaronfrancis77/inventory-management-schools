@@ -2,9 +2,12 @@ using DaymapInventory.Models;
 
 namespace DaymapInventory.Interfaces
 {
-    public interface ITransactionRepository : IRepository<Transaction>
+    public interface ITransactionRepository
     {
-        Task<IEnumerable<Transaction>> GetByItemId(int itemId);
-        Task<IEnumerable<Transaction>> GetByType(string type);
+        Task<TransactionResponseDto> CreateAsync(CreateTransactionDto dto);
+        Task<IEnumerable<TransactionResponseDto>> GetAllAsync();
+        Task<TransactionResponseDto?> GetByIdAsync(Guid id);
+        Task<IEnumerable<TransactionResponseDto>> GetByItemIdAsync(Guid itemId);
+        Task<IEnumerable<TransactionResponseDto>> GetByInstanceIdAsync(Guid instanceId);
     }
 }
