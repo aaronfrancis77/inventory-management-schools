@@ -5,7 +5,7 @@
 namespace DaymapInventory.Migrations
 {
     /// <inheritdoc />
-    public partial class Sprint1Schema : Migration
+    public partial class Sprint4Schema : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
