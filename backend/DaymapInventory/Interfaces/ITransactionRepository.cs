@@ -10,4 +10,12 @@ namespace DaymapInventory.Interfaces
         Task<IEnumerable<TransactionResponseDto>> GetByItemIdAsync(Guid itemId);
         Task<IEnumerable<TransactionResponseDto>> GetByInstanceIdAsync(Guid instanceId);
     }
+
+    public class TransactionResponseDto
+    {
+    }
+
+    public class CreateTransactionDto
+    {
+    }
 }
