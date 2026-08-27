@@ -54,6 +54,9 @@ namespace DaymapInventory.Repositories
 
         public async Task AssignToItem(int itemId, int tagId)
         {
+            var item = await _context.Items.FindAsync(itemId);
+            var tag = await _context.Tags.FindAsync(tagId);
+            if (item == null || tag == null) return;
             _context.ItemTags.Add(new ItemTag { ItemId = itemId, TagId = tagId });
             await _context.SaveChangesAsync();
         }

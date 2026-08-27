@@ -100,18 +100,21 @@ namespace DaymapInventory.Controllers
             if (updatedStockCount < 0)
                 return BadRequest("The loan would reduce item stock below 0.");
 
-            // Update the instance first. Its repository synchronizes StockCount from
-            // available instances, so the explicit quantity adjustment is saved last.
             if (instance != null)
             {
+                // SyncStockCount in the instance repo recalculates stock from available
+                // instances after save, so no manual stock update needed here.
                 instance.Status = isLoan
                     ? InstanceStatus.Loaned.ToString()
                     : InstanceStatus.Available.ToString();
                 await _instanceRepository.Update(instance);
             }
-
-            item.StockCount = updatedStockCount;
-            await _itemRepository.Update(item);
+            else
+            {
+                // No instance — manually adjust stock count.
+                item.StockCount = updatedStockCount;
+                await _itemRepository.Update(item);
+            }
 
             transaction.Type = isLoan
                 ? TransactionType.Loan.ToString()
