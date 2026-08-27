@@ -34,6 +34,9 @@ namespace DaymapInventory.Repositories
         public async Task<IEnumerable<Transaction>> GetByItemId(int itemId) =>
             await _context.Transactions.Where(t => t.ItemId == itemId).ToListAsync();
 
+        public async Task<IEnumerable<Transaction>> GetByItemInstanceId(int itemInstanceId) =>
+            await _context.Transactions.Where(t => t.ItemInstanceId == itemInstanceId).ToListAsync();
+
         public async Task<IEnumerable<Transaction>> GetByType(string type) =>
             await _context.Transactions.Where(t => t.Type == type).ToListAsync();
     }

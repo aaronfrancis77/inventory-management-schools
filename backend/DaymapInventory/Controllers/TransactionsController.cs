@@ -35,6 +35,22 @@ namespace DaymapInventory.Controllers
             return transaction == null ? NotFound() : Ok(transaction);
         }
 
+        // GET: api/items/5/transactions
+        [HttpGet("/api/items/{itemId}/transactions")]
+        public async Task<IActionResult> GetByItemId(int itemId)
+        {
+            if (await _itemRepository.GetById(itemId) == null) return NotFound();
+            return Ok(await _transactionRepository.GetByItemId(itemId));
+        }
+
+        // GET: api/iteminstances/5/transactions
+        [HttpGet("/api/iteminstances/{instanceId}/transactions")]
+        public async Task<IActionResult> GetByItemInstanceId(int instanceId)
+        {
+            if (await _instanceRepository.GetById(instanceId) == null) return NotFound();
+            return Ok(await _transactionRepository.GetByItemInstanceId(instanceId));
+        }
+
         // POST: api/transactions
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] Transaction transaction)
