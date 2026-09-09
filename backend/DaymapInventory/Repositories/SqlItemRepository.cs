@@ -46,6 +46,26 @@ namespace DaymapInventory.Repositories
             }
         }
 
+        public async Task<IEnumerable<Item>> Search(string query, int? categoryId)
+        {
+            var items = _context.Items.AsNoTracking().AsQueryable();
+
+            var normalizedQuery = query.Trim().ToLowerInvariant();
+            items = items.Where(i =>
+                i.Name.ToLower().Contains(normalizedQuery) ||
+                (i.Description != null && i.Description.ToLower().Contains(normalizedQuery)) ||
+                i.ItemTags.Any(it =>
+                    it.Tag != null && it.Tag.Name.ToLower().Contains(normalizedQuery)));
+
+            if (categoryId.HasValue)
+            {
+                items = items.Where(i =>
+                    i.ItemCategories.Any(ic => ic.CategoryId == categoryId.Value));
+            }
+
+            return await items.ToListAsync();
+        }
+
         public async Task<IEnumerable<Item>> GetByStatus(string status) =>
             await _context.Items.Where(i => i.Status == status).ToListAsync();
 

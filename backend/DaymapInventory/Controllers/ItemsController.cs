@@ -30,6 +30,19 @@ namespace DaymapInventory.Controllers
             return Ok(items);
         }
 
+        // GET: api/items/search?q=laptop&categoryId=2
+        [HttpGet("search")]
+        public async Task<IActionResult> Search(
+            [FromQuery(Name = "q")] string? query,
+            [FromQuery] int? categoryId)
+        {
+            if (string.IsNullOrWhiteSpace(query))
+                return BadRequest("The q query parameter is required and cannot be empty.");
+
+            var items = await _repository.Search(query, categoryId);
+            return Ok(items);
+        }
+
         // GET: api/items/5
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
