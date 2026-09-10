@@ -2,16 +2,21 @@ using DaymapInventory.Data;
 using DaymapInventory.Interfaces;
 using DaymapInventory.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace DaymapInventory.Repositories
 {
     public class SqlTransactionRepository : ITransactionRepository
     {
         private readonly AppDbContext _context;
+        private readonly ILogger<SqlTransactionRepository>? _logger;
 
-        public SqlTransactionRepository(AppDbContext context)
+        public SqlTransactionRepository(
+            AppDbContext context, 
+            ILogger<SqlTransactionRepository>? logger = null)
         {
             _context = context;
+            _logger = logger;
         }
 
         public async Task<TransactionResponseDto> CreateAsync(CreateTransactionDto dto)

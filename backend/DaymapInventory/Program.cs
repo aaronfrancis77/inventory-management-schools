@@ -48,8 +48,37 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI(c => c.EnableTryItOutByDefault());
 }
 
+app.UseExceptionHandler(exceptionHandlerApp =>
+{
+    exceptionHandlerApp.Run(async context =>
+    {
+        var exceptionalHandlerPathFeature = context.Features.Get<IExceptionHnandlerPathFeature>();
+        var exception = exceptionalHandlerPathFeature?.Error;
+        if (exception != null)
+        {
+            var logger = context.RequestServices.GetRequiredService<ILogger<Program>>();
+            logger.LogError((EventId)exception, "An unhandled exception occurred.");
+        }
+
+        context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+        context.Response.ContentType = "application/json";
+
+        var reponse = new
+        {
+            error = "An unexpected error occurred. Please try again later.",
+            status = 500
+        };
+        await context.Response.WriteAsJsonAsync(reponse);
+    });
+});
+
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+internal interface IExceptionHnandlerPathFeature
+{
+    EventId Error { get; }
+}
