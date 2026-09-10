@@ -26,6 +26,8 @@ namespace DaymapInventory.Models
 
         public int? CreatedBy { get; set; }
 
+        public DateTime? ExpiryDate { get; set; }
+
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
