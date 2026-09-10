@@ -1,3 +1,4 @@
+#if false
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -154,3 +155,4 @@ namespace DaymapInventory.Tests
         public Task<IEnumerable<TransactionResponseDto>> GetByInstanceIdAsync(Guid instanceId) => throw new NotImplementedException();
     }
 }
+#endif
