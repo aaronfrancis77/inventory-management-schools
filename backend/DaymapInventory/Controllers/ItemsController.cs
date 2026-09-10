@@ -43,6 +43,25 @@ namespace DaymapInventory.Controllers
             return Ok(items);
         }
 
+        // GET: api/items/expiring?days=30
+        [HttpGet("expiring")]
+        public async Task<IActionResult> GetExpiringSoon([FromQuery] int days = 30)
+        {
+            if (days <= 0)
+                return BadRequest("days must be greater than 0.");
+
+            var items = await _repository.GetExpiringSoon(days);
+            return Ok(items);
+        }
+
+        // GET: api/items/expired
+        [HttpGet("expired")]
+        public async Task<IActionResult> GetExpired()
+        {
+            var items = await _repository.GetExpired();
+            return Ok(items);
+        }
+
         // GET: api/items/5
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
