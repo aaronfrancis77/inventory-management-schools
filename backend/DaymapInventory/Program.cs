@@ -26,6 +26,7 @@ builder.Services.AddScoped<ITagRepository, SqlTagRepository>();
 builder.Services.AddScoped<ITransactionRepository, SqlTransactionRepository>();
 builder.Services.AddScoped<ICustomFieldValueRepository, SqlCustomFieldValueRepository>();
 builder.Services.AddScoped<ICustomFieldRepository, SqlCustomFieldRepository>();
+builder.Services.AddScoped<ICommentRepository, SqlCommentRepository>();
 
 // UTC Time to Local Time 
 // Register DateTimeHelper and filter
