@@ -13,6 +13,7 @@ namespace DaymapInventory.Data
         public DbSet<Category> Categories { get; set; }
         public DbSet<Tag> Tags { get; set; }
         public DbSet<Transaction> Transactions { get; set; }
+        public DbSet<Comment> Comments { get; set; }
 
         // Junction tables
         public DbSet<ItemCategory> ItemCategories { get; set; }
@@ -117,6 +118,13 @@ namespace DaymapInventory.Data
                 .HasForeignKey(cfv => cfv.ItemInstanceId)
                 .IsRequired(false)
                 .OnDelete(DeleteBehavior.NoAction);
-        }
+                
+            // Comment foreign key
+            modelBuilder.Entity<Comment>()
+                .HasOne(c => c.Item)
+                .WithMany()
+                .HasForeignKey(c => c.ItemId)
+                .OnDelete(DeleteBehavior.Cascade);
+                    }
     }
 }

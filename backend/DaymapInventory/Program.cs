@@ -26,6 +26,7 @@ builder.Services.AddScoped<ITagRepository, SqlTagRepository>();
 builder.Services.AddScoped<ITransactionRepository, SqlTransactionRepository>();
 builder.Services.AddScoped<ICustomFieldValueRepository, SqlCustomFieldValueRepository>();
 builder.Services.AddScoped<ICustomFieldRepository, SqlCustomFieldRepository>();
+builder.Services.AddScoped<ICommentRepository, SqlCommentRepository>();
 
 // UTC Time to Local Time 
 // Register DateTimeHelper and filter
@@ -36,11 +37,11 @@ builder.Services.AddScoped<LocalDateTimeFilter>();
 var app = builder.Build();
 
 // Auto-apply EF migrations on startup (useful in Docker)
-using (var scope = app.Services.CreateScope())
-{
-    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    db.Database.Migrate();
-}
+// using (var scope = app.Services.CreateScope())
+// {
+//     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+//     db.Database.Migrate();
+// }
 
 if (app.Environment.IsDevelopment())
 {
