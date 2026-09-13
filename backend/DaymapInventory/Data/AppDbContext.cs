@@ -118,13 +118,13 @@ namespace DaymapInventory.Data
                 .HasForeignKey(cfv => cfv.ItemInstanceId)
                 .IsRequired(false)
                 .OnDelete(DeleteBehavior.NoAction);
-                
+
             // Comment foreign key
             modelBuilder.Entity<Comment>()
                 .HasOne(c => c.Item)
                 .WithMany()
                 .HasForeignKey(c => c.ItemId)
                 .OnDelete(DeleteBehavior.Cascade);
-                    }
+        }
     }
 }

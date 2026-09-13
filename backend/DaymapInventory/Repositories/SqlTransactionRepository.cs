@@ -2,16 +2,21 @@ using DaymapInventory.Data;
 using DaymapInventory.Interfaces;
 using DaymapInventory.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace DaymapInventory.Repositories
 {
     public class SqlTransactionRepository : ITransactionRepository
     {
         private readonly AppDbContext _context;
+        private readonly ILogger<SqlTransactionRepository>? _logger;
 
-        public SqlTransactionRepository(AppDbContext context)
+        public SqlTransactionRepository(
+            AppDbContext context, 
+            ILogger<SqlTransactionRepository>? logger = null)
         {
             _context = context;
+            _logger = logger;
         }
 
         public async Task<Transaction?> GetById(int id) => await _context.Transactions.FindAsync(id);
@@ -33,11 +38,12 @@ namespace DaymapInventory.Repositories
 
         public async Task<IEnumerable<Transaction>> GetByItemId(int itemId) =>
             await _context.Transactions.Where(t => t.ItemId == itemId).ToListAsync();
-
+            
         public async Task<IEnumerable<Transaction>> GetByItemInstanceId(int itemInstanceId) =>
             await _context.Transactions.Where(t => t.ItemInstanceId == itemInstanceId).ToListAsync();
 
         public async Task<IEnumerable<Transaction>> GetByType(string type) =>
             await _context.Transactions.Where(t => t.Type == type).ToListAsync();
+
     }
 }

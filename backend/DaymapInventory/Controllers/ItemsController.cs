@@ -30,6 +30,38 @@ namespace DaymapInventory.Controllers
             return Ok(items);
         }
 
+        // GET: api/items/search?q=laptop&categoryId=2
+        [HttpGet("search")]
+        public async Task<IActionResult> Search(
+            [FromQuery(Name = "q")] string? query,
+            [FromQuery] int? categoryId)
+        {
+            if (string.IsNullOrWhiteSpace(query))
+                return BadRequest("The q query parameter is required and cannot be empty.");
+
+            var items = await _repository.Search(query, categoryId);
+            return Ok(items);
+        }
+
+        // GET: api/items/expiring?days=30
+        [HttpGet("expiring")]
+        public async Task<IActionResult> GetExpiringSoon([FromQuery] int days = 30)
+        {
+            if (days <= 0)
+                return BadRequest("days must be greater than 0.");
+
+            var items = await _repository.GetExpiringSoon(days);
+            return Ok(items);
+        }
+
+        // GET: api/items/expired
+        [HttpGet("expired")]
+        public async Task<IActionResult> GetExpired()
+        {
+            var items = await _repository.GetExpired();
+            return Ok(items);
+        }
+
         // GET: api/items/5
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
