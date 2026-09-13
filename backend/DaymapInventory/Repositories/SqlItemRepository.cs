@@ -71,5 +71,19 @@ namespace DaymapInventory.Repositories
 
         public async Task<IEnumerable<Item>> GetLowStock() =>
             await _context.Items.Where(i => i.StockCount <= i.LowStockThreshold).ToListAsync();
+
+        public async Task<IEnumerable<Item>> GetExpiringSoon(int days)
+        {
+            var now = DateTime.UtcNow;
+            var cutoff = now.AddDays(days);
+            return await _context.Items
+                .Where(i => i.ExpiryDate != null && i.ExpiryDate > now && i.ExpiryDate <= cutoff)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Item>> GetExpired() =>
+            await _context.Items
+                .Where(i => i.ExpiryDate != null && i.ExpiryDate < DateTime.UtcNow)
+                .ToListAsync();
     }
 }

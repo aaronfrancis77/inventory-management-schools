@@ -7,5 +7,7 @@ namespace DaymapInventory.Interfaces
         Task<IEnumerable<Item>> Search(string query, int? categoryId);
         Task<IEnumerable<Item>> GetByStatus(string status);
         Task<IEnumerable<Item>> GetLowStock();
+        Task<IEnumerable<Item>> GetExpiringSoon(int days);
+        Task<IEnumerable<Item>> GetExpired();
     }
 }

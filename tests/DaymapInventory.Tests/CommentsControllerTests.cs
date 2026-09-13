@@ -1,9 +1,18 @@
+<<<<<<< HEAD
 using DaymapInventory.Controllers;
 using DaymapInventory.Data;
 using DaymapInventory.Models;
 using DaymapInventory.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+=======
+#if false
+using DaymapInventory.Controllers;
+using DaymapInventory.Data;
+using DaymapInventory.Interfaces;
+using DaymapInventory.Models;
+using DaymapInventory.Repositories;
+>>>>>>> f555cd60ee02aee6c9231348d6856e912e751dad
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace DaymapInventory.Tests
@@ -12,11 +21,17 @@ namespace DaymapInventory.Tests
     public class CommentsControllerTests
     {
         private AppDbContext _context = null!;
+<<<<<<< HEAD
+=======
+        private ICommentRepository _commentRepository = null!;
+        private IItemRepository _itemRepository = null!;
+>>>>>>> f555cd60ee02aee6c9231348d6856e912e751dad
         private CommentsController _controller = null!;
 
         [TestInitialize]
         public void Setup()
         {
+<<<<<<< HEAD
             var options = new DbContextOptionsBuilder<AppDbContext>()
                 .UseInMemoryDatabase(Guid.NewGuid().ToString())
                 .Options;
@@ -66,3 +81,24 @@ namespace DaymapInventory.Tests
         }
     }
 }
+=======
+            _context = TestDbContextFactory.CreateInMemoryContext();
+            _commentRepository = new SqlCommentRepository(_context);
+            _itemRepository = new SqlItemRepository(_context);
+            _controller = new CommentsController(_commentRepository, _itemRepository);
+        }
+
+        [TestCleanup]
+        public void Cleanup()
+        {
+            _context.Dispose();
+        }
+
+        // Test methods go here once Shreyas's CommentsController
+        // implementation lands (SCRUM 151 to 154), and depends on
+        // Antonio's repository being in place first.
+        // Remove the #if false / #endif above and below once that code exists.
+    }
+}
+#endif
+>>>>>>> f555cd60ee02aee6c9231348d6856e912e751dad
