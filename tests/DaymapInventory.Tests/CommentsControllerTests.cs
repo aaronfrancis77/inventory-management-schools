@@ -1,9 +1,9 @@
 ﻿using DaymapInventory.Controllers;
 using DaymapInventory.Data;
+using DaymapInventory.Interfaces;
 using DaymapInventory.Models;
 using DaymapInventory.Repositories;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace DaymapInventory.Tests
@@ -12,19 +12,17 @@ namespace DaymapInventory.Tests
     public class CommentsControllerTests
     {
         private AppDbContext _context = null!;
+        private ICommentRepository _commentRepository = null!;
+        private IItemRepository _itemRepository = null!;
         private CommentsController _controller = null!;
 
         [TestInitialize]
         public void Setup()
         {
-            var options = new DbContextOptionsBuilder<AppDbContext>()
-                .UseInMemoryDatabase(Guid.NewGuid().ToString())
-                .Options;
-
-            _context = new AppDbContext(options);
-            _controller = new CommentsController(
-                new SqlCommentRepository(_context),
-                new SqlItemRepository(_context));
+            _context = TestDbContextFactory.CreateInMemoryContext();
+            _commentRepository = new SqlCommentRepository(_context);
+            _itemRepository = new SqlItemRepository(_context);
+            _controller = new CommentsController(_commentRepository, _itemRepository);
         }
 
         [TestCleanup]
