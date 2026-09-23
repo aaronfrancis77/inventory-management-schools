@@ -1,8 +1,9 @@
 using DaymapInventory.Data;
 using DaymapInventory.Interfaces;
 using DaymapInventory.Repositories;
-using DaymapInventory.Helpers;  
+using DaymapInventory.Helpers;
 using DaymapInventory.Filters;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -53,23 +54,22 @@ app.UseExceptionHandler(exceptionHandlerApp =>
 {
     exceptionHandlerApp.Run(async context =>
     {
-        var exceptionalHandlerPathFeature = context.Features.Get<IExceptionHnandlerPathFeature>();
-        var exception = exceptionalHandlerPathFeature?.Error;
+        var feature = context.Features.Get<IExceptionHandlerPathFeature>();
+        var exception = feature?.Error;
         if (exception != null)
         {
             var logger = context.RequestServices.GetRequiredService<ILogger<Program>>();
-            logger.LogError((EventId)exception, "An unhandled exception occurred.");
+            logger.LogError(exception, "An unhandled exception occurred.");
         }
 
         context.Response.StatusCode = StatusCodes.Status500InternalServerError;
         context.Response.ContentType = "application/json";
 
-        var reponse = new
+        await context.Response.WriteAsJsonAsync(new
         {
             error = "An unexpected error occurred. Please try again later.",
             status = 500
-        };
-        await context.Response.WriteAsJsonAsync(reponse);
+        });
     });
 });
 
@@ -78,8 +78,3 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
-
-internal interface IExceptionHnandlerPathFeature
-{
-    EventId Error { get; }
-}
