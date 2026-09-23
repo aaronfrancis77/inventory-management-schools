@@ -1,4 +1,3 @@
-#if false
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -141,18 +140,37 @@ namespace DaymapInventory.Tests
         }
     }
 
-    // Dummy stub implementation satisfying ITransactionRepository interface for tests
     internal class TestTransactionRepository : ITransactionRepository
     {
-        public Task<TransactionResponseDto> CreateAsync(CreateTransactionDto dto)
+        private readonly List<Transaction> _store = new();
+
+        public Task<Transaction?> GetById(int id) =>
+            Task.FromResult(_store.FirstOrDefault(t => t.Id == id));
+
+        public Task<IEnumerable<Transaction>> GetAll() =>
+            Task.FromResult<IEnumerable<Transaction>>(_store);
+
+        public Task Add(Transaction entity)
         {
-            return Task.FromResult(new TransactionResponseDto());
+            entity.Id = _store.Count + 1;
+            entity.CreatedAt = DateTime.UtcNow;
+            _store.Add(entity);
+            return Task.CompletedTask;
         }
 
-        public Task<IEnumerable<TransactionResponseDto>> GetAllAsync() => throw new NotImplementedException();
-        public Task<TransactionResponseDto?> GetByIdAsync(Guid id) => throw new NotImplementedException();
-        public Task<IEnumerable<TransactionResponseDto>> GetByItemIdAsync(Guid itemId) => throw new NotImplementedException();
-        public Task<IEnumerable<TransactionResponseDto>> GetByInstanceIdAsync(Guid instanceId) => throw new NotImplementedException();
+        public Task Update(Transaction entity) =>
+            throw new InvalidOperationException("Transactions are append-only.");
+
+        public Task Delete(int id) =>
+            throw new InvalidOperationException("Transactions are immutable.");
+
+        public Task<IEnumerable<Transaction>> GetByItemId(int itemId) =>
+            Task.FromResult<IEnumerable<Transaction>>(_store.Where(t => t.ItemId == itemId).ToList());
+
+        public Task<IEnumerable<Transaction>> GetByItemInstanceId(int itemInstanceId) =>
+            Task.FromResult<IEnumerable<Transaction>>(_store.Where(t => t.ItemInstanceId == itemInstanceId).ToList());
+
+        public Task<IEnumerable<Transaction>> GetByType(string type) =>
+            Task.FromResult<IEnumerable<Transaction>>(_store.Where(t => t.Type == type).ToList());
     }
 }
-#endif
