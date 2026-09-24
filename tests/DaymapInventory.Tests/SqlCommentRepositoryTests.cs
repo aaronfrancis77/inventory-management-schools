@@ -42,6 +42,10 @@ namespace DaymapInventory.Tests
             await _repository.Add(comment);
 
             Assert.AreEqual(1, (await _repository.GetAll()).Count());
+            _context.ChangeTracker.Clear();
+            var stored = (await _repository.GetAll()).Single();
+            Assert.AreEqual("Needs a new bulb", stored.Body);
+            Assert.AreEqual(1, stored.CreatedBy);
         }
 
         [TestMethod]
@@ -51,11 +55,12 @@ namespace DaymapInventory.Tests
             _context.Items.Add(item);
             await _context.SaveChangesAsync();
 
-            var comment = new Comment { ItemId = item.Id, Body = "Screen flickers" };
+            var comment = new Comment { ItemId = item.Id, Body = "Screen flickers", CreatedAt = new DateTime(2000, 1, 1) };
+            var before = DateTime.UtcNow;
 
             await _repository.Add(comment);
 
-            Assert.AreNotEqual(default(DateTime), comment.CreatedAt);
+            Assert.IsTrue(comment.CreatedAt >= before);
         }
 
         [TestMethod]
@@ -93,6 +98,7 @@ namespace DaymapInventory.Tests
             comment.Body = "Updated body";
             await _repository.Update(comment);
 
+            _context.ChangeTracker.Clear();
             var result = await _repository.GetById(comment.Id);
             Assert.AreEqual("Updated body", result!.Body);
         }
@@ -159,8 +165,8 @@ namespace DaymapInventory.Tests
 
             var first = new Comment { ItemId = item.Id, Body = "First", CreatedAt = DateTime.UtcNow.AddMinutes(-10) };
             var second = new Comment { ItemId = item.Id, Body = "Second", CreatedAt = DateTime.UtcNow };
-            _context.Comments.Add(first);
             _context.Comments.Add(second);
+            _context.Comments.Add(first);
             await _context.SaveChangesAsync();
 
             var results = (await _repository.GetByItemId(item.Id)).ToList();
