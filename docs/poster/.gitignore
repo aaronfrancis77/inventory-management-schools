@@ -1,0 +1,3 @@
+# build previews and shareable zip are regenerated locally
+preview_*.png
+*.zip

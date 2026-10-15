@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>UG_ICT_P01 Poster</title>
+<!--
+  A1 portrait expo poster (594 x 841 mm).
+  Type scale: nothing smaller than ~22pt so it reads from a metre or two away.
+  Export: bash build.sh (headless Edge -> UG_ICT_P01_poster.pdf).
+-->
+<style>
+  @page { size: 594mm 841mm; margin: 0; }
+  :root {
+    --teal: #009CA6; --purple: #7B57CB; --pink: #D62598; --orange: #FF8A3D;
+    --charcoal: #262626; --grey: #DDDDDD; --light: #F2F4F5; --white: #FFFFFF;
+    --m: 28mm;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--white); }
+  body {
+    width: 594mm; height: 841mm; overflow: hidden; position: relative;
+    font-family: "Museo Sans", "Segoe UI", Arial, Helvetica, sans-serif; color: var(--charcoal);
+    -webkit-print-color-adjust: exact; print-color-adjust: exact;
+  }
+
+  .blob { position: absolute; border-radius: 50%; z-index: 0; }
+  .blob.a { width: 280mm; height: 280mm; background: var(--teal); opacity: .08; top: -140mm; left: -130mm; }
+  .blob.b { width: 220mm; height: 220mm; background: var(--purple); opacity: .06; top: 360mm; right: -140mm; }
+  .blob.c { width: 200mm; height: 200mm; background: var(--pink); opacity: .05; bottom: 30mm; left: -140mm; }
+
+  .page { position: absolute; inset: var(--m); display: flex; flex-direction: column; gap: 7mm; z-index: 1; }
+
+  /* ---------- header ---------- */
+  header { display: grid; grid-template-columns: 1fr 46mm; gap: 10mm; align-items: start; }
+  .brand-row { display: flex; align-items: center; gap: 8mm; margin-bottom: 4mm; }
+  .brand-row img.daymap { height: 22mm; }
+  .brand-row img.civica { height: 16mm; }
+  .brand-row .x { font-size: 28pt; color: #999; }
+  h1 { font-size: 118pt; line-height: 1; font-weight: 800; letter-spacing: -3pt; white-space: nowrap; }
+  h1 span { color: var(--teal); }
+  .tagline { margin-top: 3mm; font-size: 34pt; line-height: 1.25; color: #444; }
+  .tagline b { color: var(--purple); }
+  .swin-slot { width: 46mm; height: 92mm; }
+  .swin-slot img { width: 100%; height: 100%; object-fit: contain; display: block; }
+
+  /* ---------- sections ---------- */
+  .sec-head { display: flex; align-items: baseline; gap: 6mm; margin-bottom: 4mm; }
+  .sec-head .num { font-size: 64pt; font-weight: 800; line-height: 1; }
+  .sec-head h2 { font-size: 52pt; font-weight: 800; letter-spacing: 1pt; }
+  .sec-head .q { font-size: 28pt; color: #666; font-style: italic; margin-left: auto; }
+  .problem .num, .problem h2 { color: var(--pink); }
+  .process .num, .process h2 { color: var(--purple); }
+  .solution .num, .solution h2 { color: var(--teal); }
+
+  /* problem */
+  .problem .lead { font-size: 30pt; line-height: 1.3; margin-bottom: 4mm; }
+  .pains { list-style: none; display: grid; grid-template-columns: repeat(4, 1fr); gap: 5mm; margin-bottom: 5mm; }
+  .pains li { background: var(--light); border-left: 2.5mm solid var(--pink); border-radius: 2mm; padding: 4mm 5mm; font-size: 23pt; line-height: 1.25; }
+  .pains li b { display: block; font-size: 27pt; margin-bottom: 1.5mm; }
+  .ba { background: var(--light); border-radius: 5mm; padding: 4mm 6mm; }
+  .ba svg { width: 100%; height: auto; display: block; }
+
+  /* process */
+  .timeline { display: grid; grid-template-columns: repeat(6, 1fr); gap: 5mm; position: relative; }
+  .timeline::before { content: ""; position: absolute; left: 0; right: 0; top: 12mm; height: 1.5mm; background: linear-gradient(90deg, var(--purple), var(--teal)); z-index: 0; }
+  .sprint { position: relative; z-index: 1; }
+  .sprint .dot { width: 25mm; height: 25mm; border-radius: 50%; background: var(--purple); color: #fff; font-weight: 800; font-size: 24pt; display: flex; align-items: center; justify-content: center; border: 2mm solid #fff; }
+  .sprint:nth-child(n+4) .dot { background: var(--teal); }
+  .sprint h3 { font-size: 26pt; margin: 2mm 0 1mm; line-height: 1.15; }
+  .sprint p { font-size: 22pt; line-height: 1.25; color: #444; }
+  .method { margin-top: 5mm; display: flex; gap: 4mm; flex-wrap: wrap; align-items: center; }
+  .method .label { font-size: 24pt; font-weight: 700; margin-right: 2mm; }
+  .chip { font-size: 22pt; padding: 1.5mm 5mm; border-radius: 20mm; background: var(--light); border: .5mm solid var(--grey); }
+
+  /* solution */
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5mm; margin-bottom: 5mm; }
+  .stat { background: var(--charcoal); color: #fff; border-radius: 4mm; padding: 4mm 6mm; display: flex; align-items: baseline; gap: 4mm; }
+  .stat .n { font-size: 64pt; font-weight: 800; line-height: 1; }
+  .stat:nth-child(1) .n { color: #3FD3DC; } .stat:nth-child(2) .n { color: #B49BF0; }
+  .stat:nth-child(3) .n { color: #F06FC2; } .stat:nth-child(4) .n { color: var(--orange); }
+  .stat .l { font-size: 23pt; color: #ddd; line-height: 1.15; }
+  .sol-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 7mm; }
+  .left-col { display: flex; flex-direction: column; gap: 5mm; }
+  .features { display: grid; grid-template-columns: 1fr 1fr; gap: 4mm; }
+  .feat { border: .6mm solid var(--grey); border-radius: 3mm; padding: 3mm 5mm; border-top: 2.5mm solid var(--teal); background: #fff; }
+  .feat h4 { font-size: 26pt; margin-bottom: 1mm; line-height: 1.15; }
+  .feat p { font-size: 22pt; line-height: 1.25; color: #444; }
+  .arch { background: var(--light); border-radius: 4mm; padding: 4mm 5mm; flex: 1; display: flex; flex-direction: column; justify-content: center; }
+  .arch h4 { font-size: 26pt; margin-bottom: 3mm; }
+  .arch svg { width: 100%; height: auto; display: block; }
+  .arch .stack { font-size: 22pt; color: #444; text-align: center; margin-top: 3mm; line-height: 1.3; }
+
+  .right-col { display: flex; flex-direction: column; }
+  .browser { flex: 1; border-radius: 4mm; overflow: hidden; border: .6mm solid #cfd4d8; background: #fafafa; display: flex; flex-direction: column; box-shadow: 0 2mm 6mm rgba(0,0,0,.12); }
+  .browser .bar { background: #1b1b1b; padding: 3mm 5mm; display: flex; align-items: center; gap: 2.5mm; }
+  .browser .bar i { width: 4.5mm; height: 4.5mm; border-radius: 50%; display: block; }
+  .browser .bar .url { margin-left: 4mm; font-size: 22pt; color: #eee; font-weight: 700; }
+  /* image is absolutely positioned so it never stretches the row; zoomed so endpoint paths stay legible */
+  .browser .shot { flex: 1; overflow: hidden; position: relative; }
+  .browser .shot img { position: absolute; top: 0; left: -2%; width: 125%; margin-top: -31%; display: block; } /* starts at /api/Items/search */
+  .shot-cap { font-size: 22pt; color: #555; margin-top: 2mm; text-align: center; font-style: italic; }
+
+  .why { background: var(--teal); color: #fff; border-radius: 4mm; padding: 5mm 8mm; font-size: 30pt; line-height: 1.3; }
+  .why b { font-weight: 800; }
+
+  /* ---------- footer ---------- */
+  footer { margin-top: auto; display: grid; grid-template-columns: 1fr 46mm; gap: 10mm; align-items: end; border-top: .8mm solid var(--grey); padding-top: 5mm; }
+  .people { display: grid; grid-template-columns: 2.4fr 1fr 1.1fr; gap: 8mm; }
+  .people h5 { font-size: 22pt; text-transform: uppercase; letter-spacing: 1.5pt; color: var(--teal); margin-bottom: 1.5mm; }
+  .people p { font-size: 25pt; line-height: 1.3; }
+  .code-square { width: 46mm; height: 46mm; background: var(--charcoal); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 17pt; text-align: center; }
+</style>
+</head>
+<body>
+<div class="blob a"></div><div class="blob b"></div><div class="blob c"></div>
+
+<div class="page">
+
+  <header>
+    <div>
+      <div class="brand-row">
+        <img class="daymap" src="logos/daymap.svg" alt="Daymap">
+        <span class="x">×</span>
+        <img class="civica" src="logos/civica-teal.svg" alt="Civica">
+      </div>
+      <h1>Daymap <span>Inventory</span></h1>
+      <p class="tagline">Every laptop, lab kit and loan, <b>tracked in one place</b>.<br>A school inventory system built for Civica's Daymap platform.</p>
+    </div>
+    <div class="swin-slot"><img src="logos/swinburne.png" alt="Swinburne University of Technology"></div>
+  </header>
+
+  <!-- 01 PROBLEM -->
+  <section class="problem">
+    <div class="sec-head"><span class="num">01</span><h2>THE PROBLEM</h2><span class="q">What are we addressing?</span></div>
+    <p class="lead">Schools manage thousands of shared assets with spreadsheets, paper sign-out sheets and memory.</p>
+    <ul class="pains">
+      <li><b>Items go missing</b>No one knows who borrowed what.</li>
+      <li><b>No single view</b>Stock is spread across rooms and campuses.</li>
+      <li><b>Stock expires</b>First-aid kits and chemicals go out of date.</li>
+      <li><b>One size doesn't fit</b>A violin and an iPad need different details.</li>
+    </ul>
+    <div class="ba">
+      <svg viewBox="0 0 935 168" font-family="Segoe UI, Arial, sans-serif" text-anchor="middle">
+        <defs>
+          <marker id="ap" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#D62598"/></marker>
+          <marker id="at" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#009CA6"/></marker>
+        </defs>
+        <!-- BEFORE -->
+        <text x="6" y="22" text-anchor="start" font-size="19" font-weight="800" fill="#D62598">BEFORE</text>
+        <g transform="translate(18,38)">
+          <rect width="64" height="58" rx="5" fill="#fff" stroke="#bbb"/>
+          <rect width="64" height="13" rx="5" fill="#3aa35b"/>
+          <g stroke="#ddd"><line x1="0" y1="28" x2="64" y2="28"/><line x1="0" y1="43" x2="64" y2="43"/><line x1="21" y1="13" x2="21" y2="58"/><line x1="43" y1="13" x2="43" y2="58"/></g>
+        </g>
+        <text x="50" y="124" font-size="15" fill="#333">Spreadsheets</text>
+        <g transform="translate(118,36)">
+          <rect width="56" height="62" rx="5" fill="#f7e6c4" stroke="#c9a96b"/>
+          <rect x="17" y="-5" width="22" height="10" rx="2" fill="#999"/>
+          <g stroke="#a88" stroke-width="2" stroke-linecap="round" fill="none"><path d="M9 20 q9 -5 18 0 t18 0"/><path d="M9 33 q9 -5 18 0 t14 0"/><path d="M9 46 q9 -5 18 0 t18 0"/></g>
+        </g>
+        <text x="146" y="124" font-size="15" fill="#333">Paper</text>
+        <circle cx="240" cy="67" r="31" fill="#fff" stroke="#bbb"/>
+        <text x="240" y="80" font-size="36" font-weight="800" fill="#D62598">?</text>
+        <text x="240" y="124" font-size="15" fill="#333">Memory</text>
+        <line x1="284" y1="67" x2="314" y2="67" stroke="#D62598" stroke-width="3.5" marker-end="url(#ap)"/>
+        <rect x="320" y="30" width="122" height="76" rx="10" fill="#D62598"/>
+        <text x="381" y="62" font-size="16" font-weight="800" fill="#fff">"Who has the</text>
+        <text x="381" y="84" font-size="16" font-weight="800" fill="#fff">projector?"</text>
+
+        <line x1="458" y1="10" x2="458" y2="158" stroke="#bbb" stroke-width="1.5" stroke-dasharray="5 5"/>
+
+        <!-- AFTER -->
+        <text x="474" y="22" text-anchor="start" font-size="19" font-weight="800" fill="#009CA6">AFTER</text>
+        <g font-size="14" fill="#fff" font-weight="700">
+          <rect x="474" y="38" width="138" height="28" rx="14" fill="#7B57CB"/><text x="543" y="57">Laptops &amp; iPads</text>
+          <rect x="474" y="74" width="138" height="28" rx="14" fill="#7B57CB"/><text x="543" y="93">Lab &amp; first aid</text>
+          <rect x="474" y="110" width="138" height="28" rx="14" fill="#7B57CB"/><text x="543" y="129">Music &amp; sport</text>
+        </g>
+        <line x1="618" y1="88" x2="644" y2="88" stroke="#009CA6" stroke-width="3.5" marker-end="url(#at)"/>
+        <rect x="650" y="40" width="112" height="96" rx="12" fill="#009CA6"/>
+        <text x="706" y="83" font-size="18" font-weight="800" fill="#fff">Daymap</text>
+        <text x="706" y="105" font-size="18" font-weight="800" fill="#fff">Inventory</text>
+        <line x1="768" y1="88" x2="792" y2="88" stroke="#009CA6" stroke-width="3.5" marker-end="url(#at)"/>
+        <g font-size="15" fill="#262626" font-weight="700" text-anchor="start">
+          <text x="798" y="52">✔ Who has it</text>
+          <text x="798" y="80">✔ When it's due</text>
+          <text x="798" y="108">✔ What expires</text>
+          <text x="798" y="136">✔ One record</text>
+        </g>
+      </svg>
+    </div>
+  </section>
+
+  <!-- 02 PROCESS -->
+  <section class="process">
+    <div class="sec-head"><span class="num">02</span><h2>THE PROCESS</h2><span class="q">How did we approach it?</span></div>
+    <div class="timeline">
+      <div class="sprint"><div class="dot">S1</div><h3>Foundations</h3><p>Database design, models, first API</p></div>
+      <div class="sprint"><div class="dot">S2</div><h3>Real data</h3><p>SQL Server + item instances</p></div>
+      <div class="sprint"><div class="dot">S3</div><h3>Custom fields</h3><p>Schools define their own fields</p></div>
+      <div class="sprint"><div class="dot">S4</div><h3>Loans &amp; tags</h3><p>Borrow, return, live stock</p></div>
+      <div class="sprint"><div class="dot">S5</div><h3>Expiry &amp; search</h3><p>Expiry alerts, search, comments</p></div>
+      <div class="sprint"><div class="dot">S6</div><h3>Hardening</h3><p>Error handling, tests, Docker</p></div>
+    </div>
+    <div class="method">
+      <span class="label">How we worked:</span>
+      <span class="chip">Agile Scrum</span><span class="chip">Jira</span><span class="chip">GitHub pull requests</span>
+      <span class="chip">Client sprint reviews</span><span class="chip">Unit testing</span>
+    </div>
+  </section>
+
+  <!-- 03 SOLUTION -->
+  <section class="solution">
+    <div class="sec-head"><span class="num">03</span><h2>THE SOLUTION</h2><span class="q">What did we develop?</span></div>
+    <div class="stats">
+      <div class="stat"><div class="n">40</div><div class="l">API<br>endpoints</div></div>
+      <div class="stat"><div class="n">105</div><div class="l">passing<br>tests</div></div>
+      <div class="stat"><div class="n">13</div><div class="l">data<br>models</div></div>
+      <div class="stat"><div class="n">6</div><div class="l">sprints<br>delivered</div></div>
+    </div>
+    <div class="sol-grid">
+      <div class="left-col">
+        <div class="features">
+          <div class="feat"><h4>Unit tracking</h4><p>Every physical item, one by one</p></div>
+          <div class="feat"><h4>Loans &amp; returns</h4><p>Stock updates automatically</p></div>
+          <div class="feat"><h4>Custom fields</h4><p>Each school adds its own</p></div>
+          <div class="feat"><h4>Tags &amp; categories</h4><p>Organise stock your way</p></div>
+          <div class="feat"><h4>Expiry alerts</h4><p>Catch out-of-date stock</p></div>
+          <div class="feat"><h4>Search &amp; history</h4><p>Full transaction trail</p></div>
+        </div>
+        <div class="arch">
+          <h4>How it fits together</h4>
+          <svg viewBox="0 0 400 62" font-family="Segoe UI, Arial, sans-serif" text-anchor="middle">
+            <defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#262626"/></marker></defs>
+            <g font-weight="700" font-size="14" fill="#fff">
+              <rect x="0" y="4" width="82" height="54" rx="7" fill="#7B57CB"/><text x="41" y="36">Daymap</text>
+              <rect x="104" y="4" width="82" height="54" rx="7" fill="#009CA6"/><text x="145" y="36">REST API</text>
+              <rect x="208" y="4" width="82" height="54" rx="7" fill="#009CA6"/><text x="249" y="36">Data layer</text>
+              <rect x="312" y="4" width="88" height="54" rx="7" fill="#262626"/><text x="356" y="36">SQL Server</text>
+            </g>
+            <g stroke="#262626" stroke-width="2" marker-end="url(#ar)"><line x1="84" y1="31" x2="102" y2="31"/><line x1="188" y1="31" x2="206" y2="31"/><line x1="292" y1="31" x2="310" y2="31"/></g>
+          </svg>
+          <p class="stack">ASP.NET Core · .NET 8 · EF Core · Docker</p>
+        </div>
+      </div>
+      <div class="right-col">
+        <div class="browser">
+          <div class="bar"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i><span class="url">Our live API (Swagger)</span></div>
+          <div class="shot"><img src="images/swagger_items.png" alt="Swagger UI showing the Items endpoints"></div>
+        </div>
+        <p class="shot-cap">Search, expiring and expired items, live</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="why"><b>Why it matters:</b> less time chasing equipment, fewer lost and expired items, and one trusted record of everything a school owns.</div>
+
+  <footer>
+    <div class="people">
+      <div>
+        <h5>Team P01</h5>
+        <p>Aaron Francis · Sarah Agate · Shreyas Cheguri<br>
+           Pak Kiu Cheung · Thivyaaharan Parthiepan · Antonio Prince</p>
+      </div>
+      <div><h5>Supervisor</h5><p>Naveed Ali</p></div>
+      <div><h5>Client</h5><p>Harry Macheda<br>Civica (Daymap)</p></div>
+    </div>
+    <div class="code-square">UG_ICT_P01</div>
+  </footer>
+
+</div>
+</body>
+</html>
